@@ -35,6 +35,13 @@ public:
     int StopListen();
     
     ~MySocketServer();
+
+    //接收数据,最多sz字节,是否强制必须sz字节,返回已接收字节数,0表示服务器正常退出,否则调用WSAGetLastError查看
+    static int ReadSocket(SOCKET s,void* data,const size_t datalen,const bool must=false);
+
+    //发送数据,最多sz字节,是否强制必须sz字节,返回已发送字节数
+    static int WriteSocket(SOCKET s,const void* data,const size_t datalen,const bool must=false);
+
 private:
     int port_;
     SocketType type_;
