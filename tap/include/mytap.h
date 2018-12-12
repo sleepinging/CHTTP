@@ -9,12 +9,18 @@ class MyIP;
 
 class MyMAC;
 
+class MyMASK;
+
 class MyTap
 {
 private:
     /* data */
-  MyMAC *mac_;
-  MyIP *ip_;
+  MyMAC *mac_=nullptr;
+  MyIP *ip_ = nullptr;
+  MyMASK *mask_ = nullptr;
+
+  //设备句柄
+  void *hd_=nullptr;
 
 public:
   MyTap(/* args */);
@@ -23,7 +29,7 @@ public:
   //打开tap设备
   int Open();
 
-  //设置状态
+  //设置状态,返回0失败
   int SetStatus(bool st);
 
   //设置MAC

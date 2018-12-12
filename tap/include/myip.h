@@ -13,4 +13,9 @@ public:
   ~MyIP();
 };
 
+class MyMASK{
+private:
+  unsigned char data[4] = {0};
+};
+
 #endif // __H__MYIP__H__
