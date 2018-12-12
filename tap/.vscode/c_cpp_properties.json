@@ -12,7 +12,8 @@
                 "${workspaceFolder}",
                 "socket",
                 "${workspaceFolder}/http",
-                "${workspaceFolder}/tool"
+                "${workspaceFolder}/tool",
+                "${workspaceFolder}/include"
             ],
             "defines": [
                 "_DEBUG",
