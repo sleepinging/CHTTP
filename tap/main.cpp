@@ -41,8 +41,8 @@ int test(){
 int main(/*int argc, char const *argv[]*/)
 {
     MyMAC mac;
-    mac.Parse("01a2F34405aa");
+    mac.Parse("01-a2-F3-44-05-aa");
     auto s = mac.ToLow();
-    s = mac.ToUp();
+    s = mac.ToUp(':');
     return 0;
 }

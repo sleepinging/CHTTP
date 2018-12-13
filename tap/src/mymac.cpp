@@ -19,8 +19,14 @@ int MyMAC::Parse(const std::string &mac)
         return -1;
     }
     if(mac.length()==12){
-        for (int i = 0; i < 12;i+=2){
-            data[i / 2] = atohex(mac[i]) * 0x10 + atohex(mac[i + 1]);
+        for (int i = 0; i < 6;++i){
+            data[i] = atohex(mac[i*2]) * 0x10 + atohex(mac[2*i + 1]);
+        }
+    }
+    if (mac.length() == 17){
+        for (int i = 0; i < 6; ++i)
+        {
+            data[i] = atohex(mac[i*3]) * 0x10 + atohex(mac[i*3 + 1]);
         }
     }
     return 0;
