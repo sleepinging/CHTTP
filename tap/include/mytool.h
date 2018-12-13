@@ -16,4 +16,7 @@ std::string GetTAPComponentId();
 //     p = nullptr;
 // }
 
+//将1个字符转为数字(16进制)
+unsigned char atohex(char c);
+
 #endif // __H__MYTOOL__H__

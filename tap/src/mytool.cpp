@@ -43,3 +43,20 @@ std::string GetTAPComponentId()
     }
     return szDevComponentId;
 }
+
+//将1个字符转为数字(16进制)
+unsigned char atohex(char c)
+{
+    unsigned char s=0;
+    if (c >= '0' && c <= '9')
+    {
+        s = c - '0';
+    }else if(c>='a'&&c<='z'){
+        s = c - 'a' + 10;
+    }
+    else if (c >= 'A' && c <= 'Z')
+    {
+        s = c - 'A' + 10;
+    }
+    return s;
+}
