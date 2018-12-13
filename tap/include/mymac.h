@@ -18,10 +18,10 @@ public:
   int Parse(const std::string &mac);
 
   //转为大写字符串,加上分隔符
-  std::string ToLow(const char chsp=':');
+  std::string ToLow(const char chsp=':') const ;
 
   //转为大写字符串,加上分隔符
-  std::string ToUp(const char chsp = ':');
+  std::string ToUp(const char chsp = ':') const;
 };
 
 #endif // __H__MYMAC__H__

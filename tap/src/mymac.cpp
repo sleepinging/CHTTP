@@ -33,7 +33,7 @@ int MyMAC::Parse(const std::string &mac)
 }
 
 //转为大写字符串,加上分隔符
-std::string MyMAC::ToLow(const char chsp)
+std::string MyMAC::ToLow(const char chsp) const
 {
     const int splen = 1;
     const int buflen = 12 + 5 * 1;
@@ -48,7 +48,7 @@ std::string MyMAC::ToLow(const char chsp)
 }
 
 //转为大写字符串,加上分隔符
-std::string MyMAC::ToUp(const char chsp)
+std::string MyMAC::ToUp(const char chsp) const
 {
     const int splen = 1;
     const int buflen = 12 + 5 * 1;
