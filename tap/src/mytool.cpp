@@ -61,6 +61,11 @@ unsigned char atohex(char c)
     return s;
 }
 
+//将1个字符转为数字(10进制)
+unsigned char atodec(char c){
+    return c - '0';
+}
+
 //将一个字节转为2个字符(16进制小写)
 void hextoa(unsigned char h, char buf[2])
 {
@@ -110,4 +115,28 @@ void hextoA(unsigned char h, char buf[2])
     }
 
     return;
+}
+
+void split(const string &s, const string &c, vector<std::string> &v)
+{
+    string::size_type pos1, pos2;
+    pos1 = 0;
+    pos2 = s.find(c);
+    while (string::npos != pos2)
+    {
+        v.push_back(s.substr(pos1, pos2 - pos1));
+        pos1 = pos2 + c.size();
+        pos2 = s.find(c, pos1);
+    }
+    if (pos1 != s.length())
+        v.push_back(s.substr(pos1));
+}
+
+std::string &trim(std::string &s)
+{
+    if (s.empty())
+        return s;
+    s.erase(0, s.find_first_not_of(" "));
+    s.erase(s.find_last_not_of(" ") + 1);
+    return s;
 }

@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include <vector>
+
 #include "mytool.h"
 
 using namespace std;
@@ -20,10 +22,28 @@ int MyIP::Parse(const std::string &ip){
     if (iplen>15||iplen<7){
         return -1;
     }
+    vector<string> v;
+    split(ip, ".", v);
+    if(v.size()!=4){
+        return -1;
+    }
+    unsigned char s = 0;
+    for (int i = 0; i < 4; ++i)
+    {
+        s = 0;
+        const auto &d = v[i]; //192
+        for(const auto c:d){//1 9 2
+            s *= 10;
+            s += (c - '0');
+        }
+        data[i] = s;
+    }
     return 0;
 }
 
 //转为字符串
 std::string MyIP::ToString() const{
-
+    char buf[15] = {0};
+    sprintf(buf, "%d.%d.%d.%d", data[0], data[1], data[2], data[3]);
+    return buf;
 }

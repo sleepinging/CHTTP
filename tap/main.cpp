@@ -40,9 +40,8 @@ int test(){
 
 int main(/*int argc, char const *argv[]*/)
 {
-    MyMAC mac;
-    mac.Parse("01-a2-F3-44-05-aa");
-    auto s = mac.ToLow();
-    s = mac.ToUp(':');
+    MyIP ip;
+    ip.Parse("192.168.8.1");
+    auto s = ip.ToString();
     return 0;
 }
