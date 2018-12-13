@@ -7,7 +7,7 @@
 
 class MyIP
 {
-private:
+public:
   unsigned char data[4] = {0};
 
 public:

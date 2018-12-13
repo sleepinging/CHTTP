@@ -56,6 +56,9 @@ public:
   //获取掩码
   const MyMask *GetMask() const;
 
+  //设置完mac,ip,掩码之后使用
+  int SetTAP();
+
   //读取
   size_t Read(char *buf, size_t buflen);
 

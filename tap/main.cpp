@@ -40,8 +40,11 @@ int test(){
 
 int main(/*int argc, char const *argv[]*/)
 {
-    MyIP ip;
-    ip.Parse("192.168.8.1");
-    auto s = ip.ToString();
+    MyMask mask(21);
+    unsigned char buf[4];
+    mask.ToIPv4Mask(buf);
+    MyIP ip,net;
+    ip.Parse("192.168.9.138");
+    mask.ToNetIPv4(&ip, &net);
     return 0;
 }
