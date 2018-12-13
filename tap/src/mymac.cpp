@@ -1,5 +1,7 @@
 #include "mymac.h"
 
+#include "mytool.h"
+
 using namespace std;
 
 MyMAC::MyMAC(/* args */)
@@ -11,12 +13,46 @@ MyMAC::~MyMAC()
 }
 
 //从字符串解析
-int Parse(const std::string &mac){
+int MyMAC::Parse(const std::string &mac)
+{
     if(mac.length()<12){
         return -1;
     }
     if(mac.length()==12){
-        
+        for (int i = 0; i < 12;i+=2){
+            data[i / 2] = atohex(mac[i]) * 0x10 + atohex(mac[i + 1]);
+        }
     }
     return 0;
+}
+
+//转为大写字符串,加上分隔符
+std::string MyMAC::ToLow(const char chsp)
+{
+    const int splen = 1;
+    const int buflen = 12 + 5 * 1;
+    string mac;
+    mac.resize(buflen);
+    for (int i = 0; i < 5;++i){
+        hextoa(data[i], &mac[i * 2 + i * splen]);
+        mac[i * 2 + i * splen + 2] = chsp;
+    }
+    hextoa(data[5], &mac[10+5*splen]);
+    return mac;
+}
+
+//转为大写字符串,加上分隔符
+std::string MyMAC::ToUp(const char chsp)
+{
+    const int splen = 1;
+    const int buflen = 12 + 5 * 1;
+    string mac;
+    mac.resize(buflen);
+    for (int i = 0; i < 5; ++i)
+    {
+        hextoA(data[i], &mac[i * 2 + i * splen]);
+        mac[i * 2 + i * splen + 2] = chsp;
+    }
+    hextoA(data[5], &mac[10 + 5 * splen]);
+    return mac;
 }

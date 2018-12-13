@@ -40,6 +40,9 @@ int test(){
 
 int main(/*int argc, char const *argv[]*/)
 {
-    auto h = atohex('C');
+    MyMAC mac;
+    mac.Parse("01a2F34405aa");
+    auto s = mac.ToLow();
+    s = mac.ToUp();
     return 0;
 }

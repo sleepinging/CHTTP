@@ -19,4 +19,10 @@ std::string GetTAPComponentId();
 //将1个字符转为数字(16进制)
 unsigned char atohex(char c);
 
+//将一个字节转为2个字符(16进制小写)
+void hextoa(unsigned char h, char buf[2]);
+
+//将一个字节转为2个字符(16进制大写)
+void hextoA(unsigned char h, char buf[2]);
+
 #endif // __H__MYTOOL__H__

@@ -60,3 +60,54 @@ unsigned char atohex(char c)
     }
     return s;
 }
+
+//将一个字节转为2个字符(16进制小写)
+void hextoa(unsigned char h, char buf[2])
+{
+    unsigned char a = h >> 4;
+    unsigned char b = h & 0x0f;
+
+    if(a<10){
+        buf[0] = '0' + a;
+    }else{
+        buf[0] = 'a' + a-10;
+    }
+
+    if (b < 10)
+    {
+        buf[1] = '0' + b;
+    }
+    else
+    {
+        buf[1] = 'a' + b-10;
+    }
+
+    return;
+}
+
+//将一个字节转为2个字符(16进制大写)
+void hextoA(unsigned char h, char buf[2])
+{
+    unsigned char a = h >> 4;
+    unsigned char b = h & 0x0f;
+
+    if (a < 10)
+    {
+        buf[0] = '0' + a;
+    }
+    else
+    {
+        buf[0] = 'A' + a-10;
+    }
+
+    if (b < 10)
+    {
+        buf[1] = '0' + b;
+    }
+    else
+    {
+        buf[1] = 'A' + b-10;
+    }
+
+    return;
+}
