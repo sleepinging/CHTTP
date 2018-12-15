@@ -1,6 +1,6 @@
 #include "mymac.h"
 
-#include "mytool.h"
+#include "mystring.h"
 
 using namespace std;
 
@@ -57,9 +57,9 @@ std::string MyMAC::ToLow(const char chsp) const
 //转为大写字符串,加上分隔符
 std::string MyMAC::ToUp(const char chsp) const
 {
-    const int splen = 1;
-    const int buflen = 12 + 5 * 1;
     string mac;
+    int splen = chsp==0?0:1;
+    int buflen = 12 + 5 * splen;
     mac.resize(buflen);
     for (int i = 0; i < 5; ++i)
     {

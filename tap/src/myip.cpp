@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "mytool.h"
+#include "mystring.h"
 
 using namespace std;
 

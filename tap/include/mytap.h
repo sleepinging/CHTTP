@@ -20,6 +20,8 @@ private:
   MyIP *ip_ = nullptr;
   MyMask *mask_ = nullptr;
 
+  unsigned short mtu_ = 0;
+
   //id
   std::string id_;
 
@@ -50,6 +52,9 @@ public:
 
   //设置MAC
   int SetMac(const MyMAC *mac);
+
+  //设置MTU
+  int SetMTU(unsigned short mtu);
 
   //获取MAC
   const MyMAC *GetMAC() const;

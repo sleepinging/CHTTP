@@ -9,6 +9,7 @@
 #include "tap-windows.h"
 
 #include "mytool.h"
+#include "mystring.h"
 #include "myip.h"
 #include "mymac.h"
 #include "mymask.h"
@@ -23,7 +24,7 @@ MyTap::MyTap(/* args */)
 
     id_ = GetTAPComponentId();
     dname_ = "\\\\.\\Global\\" + id_ + ".tap";
-    name_ = GetRegValue(ADAPTER_NAME_KEY + id_ + "\\Connection", "Name");
+    name_ = GetRegValue(NETWORK_CONNECTIONS_KEY + ("\\"+id_) + "\\Connection", "Name");
     if (name_ == "")
     {
         cout << "get adapter nama failed!" << endl;
@@ -87,9 +88,17 @@ int MyTap::SetStatus(bool st){
 
 //设置MAC
 int MyTap::SetMac(const MyMAC *mac){
-
     *mac_ = *mac;
-    return 0;
+    auto r=SetRegValueString(ADAPTER_KEY,"MAC",mac_->ToUp('\0'));
+    return r;
+}
+
+//设置MTU
+int MyTap::SetMTU(unsigned short mtu)
+{
+    mtu_ = mtu;
+    auto r = SetRegValueString(ADAPTER_KEY, "MTU",mytrans<unsigned short,string>(mtu_));
+    return r;
 }
 
 //获取MAC

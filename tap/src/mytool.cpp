@@ -79,7 +79,6 @@ std::string GetRegValue(const std::string &dir, const std::string name){
             //获取注册表中指定的键所对应的值
             if (ERROR_SUCCESS == ::RegQueryValueExA(hKeyResult, name.c_str(), 0, &dwDataType, (LPBYTE)lpValue, &dwSize))
             {
-                //std::wstring wstrValue(lpValue);
                 strValue = lpValue;
             }
             delete[] lpValue;
@@ -93,6 +92,66 @@ std::string GetRegValue(const std::string &dir, const std::string name){
     //关闭注册表
     ::RegCloseKey(hKeyResult);
     return strValue;
+}
+
+//修改注册表的值
+int SetRegValueString(const std::string &dir, const std::string &name, const std::string &value){
+    std::string strValue("");
+    HKEY hKey = HKEY_LOCAL_MACHINE; //这里暂时先用这个
+    HKEY hKeyResult = NULL;
+    //打开注册表
+    if (ERROR_SUCCESS != ::RegOpenKeyExA(hKey, dir.c_str(), 0, KEY_ALL_ACCESS, &hKeyResult))
+    {
+        return -1;
+    }
+    DWORD dwIndex = 0;
+    const DWORD chlen = MAX_PATH-1;   //子键名称长度
+    char chname[chlen+1] = {0};       //子键名称
+    while (RegEnumKeyA(hKeyResult, dwIndex++, chname, chlen) == ERROR_SUCCESS) //枚举子键
+    { 
+        HKEY hk;
+        //打开当前子键
+        string cd = dir + "\\" + chname;//目前子键路径
+        //cout<<"dir:" << cd << endl;
+        if (ERROR_SUCCESS != ::RegOpenKeyExA(hKey, cd.c_str(), 0, KEY_ALL_ACCESS, &hk))
+        {
+            continue;
+        }
+        //枚举键值对
+        DWORD idx = 0;
+        char kbuf[2048] = {0}; //key名称
+        DWORD klen = 2048-1;//key长度
+        DWORD tp = REG_SZ;
+        BYTE vbuf[2048] = {0}; //值名称
+        DWORD vlen = 2048-1;     //值长度
+        // auto r = RegEnumValueA(hk, idx++, kbuf, &klen, 0, &tp, vbuf, &vlen);
+        // if(r==ERROR_MORE_DATA){
+        //     continue;
+        // }
+        while (RegEnumValueA(hk, idx++, kbuf, &klen, 0, &tp, vbuf, &vlen) == ERROR_SUCCESS) //枚举键值对
+        {
+            //cout << kbuf << endl;
+            if (klen < name.length())
+            {
+                continue;
+            }
+            if (memcmp(kbuf, name.c_str(), name.length()) == 0)
+            {
+                if (RegSetValueExA(hk, kbuf,0, REG_SZ, (const BYTE*)value.c_str(), value.length()) == ERROR_SUCCESS)
+                {
+                    ::RegCloseKey(hk);
+                    ::RegCloseKey(hKeyResult);
+                    return 0;
+                }
+            }
+            memset(kbuf, 0, 2047);
+            klen = 2047;
+            memset(vbuf, 0, 2047);
+            vlen = 2047;
+        }
+    }
+    ::RegCloseKey(hKeyResult);
+    return -1;
 }
 
 //执行系统命令
@@ -112,101 +171,4 @@ int ExecCmd(std::initializer_list<std::string> cmds, bool show)
         cout << cmd << endl;
     }
     return system(cmd.c_str());
-}
-
-//将1个字符转为数字(16进制)
-unsigned char atohex(char c)
-{
-    unsigned char s=0;
-    if (c >= '0' && c <= '9')
-    {
-        s = c - '0';
-    }else if(c>='a'&&c<='z'){
-        s = c - 'a' + 10;
-    }
-    else if (c >= 'A' && c <= 'Z')
-    {
-        s = c - 'A' + 10;
-    }
-    return s;
-}
-
-//将1个字符转为数字(10进制)
-unsigned char atodec(char c){
-    return c - '0';
-}
-
-//将一个字节转为2个字符(16进制小写)
-void hextoa(unsigned char h, char buf[2])
-{
-    unsigned char a = h >> 4;
-    unsigned char b = h & 0x0f;
-
-    if(a<10){
-        buf[0] = '0' + a;
-    }else{
-        buf[0] = 'a' + a-10;
-    }
-
-    if (b < 10)
-    {
-        buf[1] = '0' + b;
-    }
-    else
-    {
-        buf[1] = 'a' + b-10;
-    }
-
-    return;
-}
-
-//将一个字节转为2个字符(16进制大写)
-void hextoA(unsigned char h, char buf[2])
-{
-    unsigned char a = h >> 4;
-    unsigned char b = h & 0x0f;
-
-    if (a < 10)
-    {
-        buf[0] = '0' + a;
-    }
-    else
-    {
-        buf[0] = 'A' + a-10;
-    }
-
-    if (b < 10)
-    {
-        buf[1] = '0' + b;
-    }
-    else
-    {
-        buf[1] = 'A' + b-10;
-    }
-
-    return;
-}
-
-void split(const string &s, const string &c, vector<std::string> &v)
-{
-    string::size_type pos1, pos2;
-    pos1 = 0;
-    pos2 = s.find(c);
-    while (string::npos != pos2)
-    {
-        v.push_back(s.substr(pos1, pos2 - pos1));
-        pos1 = pos2 + c.size();
-        pos2 = s.find(c, pos1);
-    }
-    if (pos1 != s.length())
-        v.push_back(s.substr(pos1));
-}
-
-std::string &trim(std::string &s)
-{
-    if (s.empty())
-        return s;
-    s.erase(0, s.find_first_not_of(" "));
-    s.erase(s.find_last_not_of(" ") + 1);
-    return s;
 }

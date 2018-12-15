@@ -21,7 +21,6 @@ void showerr(const char* msg=""){
 }
 
 int test(){
-    ExecCmd({"ping"},false);
     int r = 0;
     MyTap tap;
     if (tap.Open() !=0 )
@@ -42,16 +41,25 @@ int test(){
     tap.SetIPMask(&ip,&mask);
 
     MyMAC mac("94:68:11:22:33:44");
-    tap.SetMac(&mac);
+    if(tap.SetMac(&mac)!=0){
+        showerr("set mac err");
+        return -1;
+    }
 
-    r = tap.SetTAP();
-    auto n = tap.Write("123456", 6);
-    char buf[2048] = {0};
-    n = tap.Read(buf, 2048);
+    if (tap.SetMTU(1400) != 0)
+    {
+        showerr("set mtu err");
+        return -1;
+    }
 
-    cout << "read:" << buf << endl;
+    // r = tap.SetTAP();
+    // auto n = tap.Write("123456", 6);
+    // char buf[2048] = {0};
+    // n = tap.Read(buf, 2048);
 
-    tap.SetDisable();
+    // cout << "read:" << buf << endl;
+
+    //tap.SetDisable();
 
     if (tap.SetStatus(false) != 0)
     {
@@ -68,6 +76,7 @@ int test(){
 
 int main(/*int argc, char const *argv[]*/)
 {
+    //reg();
     test();
     return 0;
 }
