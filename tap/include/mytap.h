@@ -4,6 +4,7 @@
 #define __H__MYTAP__H__
 
 #include <stddef.h>
+#include <string>
 
 class MyIP;
 
@@ -19,6 +20,9 @@ private:
   MyIP *ip_ = nullptr;
   MyMask *mask_ = nullptr;
 
+  //适配器名字
+  std::string name_;
+
   //设备句柄
   void *hd_=nullptr;
 
@@ -29,13 +33,13 @@ public:
   MyTap(/* args */);
   ~MyTap();
 
-  //打开tap设备,返回-1失败
+  //打开tap设备,返回0成功
   int Open(bool zs=true);
 
-  //关闭tap设备,返回0失败
+  //关闭tap设备,返回0成功
   int Close();
 
-  //设置状态,返回0失败
+  //设置状态,返回0成功
   int SetStatus(bool st);
 
   //设置MAC
@@ -56,7 +60,7 @@ public:
   //获取掩码
   const MyMask *GetMask() const;
 
-  //设置完mac,ip,掩码之后使用
+  //设置完mac,ip,掩码之后使用,返回0成功
   int SetTAP();
 
   //读取

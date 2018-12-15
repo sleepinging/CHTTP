@@ -8,6 +8,13 @@ MyMAC::MyMAC(/* args */)
 {
 }
 
+MyMAC::MyMAC(const std::string &mac)
+{
+    if(Parse(mac)==-1){
+        throw "mac err";
+    }
+}
+
 MyMAC::~MyMAC()
 {
 }

@@ -1,5 +1,9 @@
 #include "mytap.h"
 
+#include <string.h>
+
+#include <iostream>
+
 #include <Windows.h>
 
 #include "tap-windows.h"
@@ -40,13 +44,25 @@ int MyTap::Open(bool zs)
         FILE_ATTRIBUTE_NORMAL | zs ? 0 : FILE_FLAG_OVERLAPPED,
         nullptr);
     zs_ = zs;
-    return (hd_ == INVALID_HANDLE_VALUE) ? -1 : 0;
+    if (hd_ == INVALID_HANDLE_VALUE){
+        return -1;
+    }
+    name_ = GetRegValue(ADAPTER_NAME_KEY, "Name");
+    if(name_==""){
+        return -2;
+    }
+    cout << name_ << endl;
+    return 0;
 }
 
 //关闭tap设备
 int MyTap::Close()
 {
-    return CloseHandle(hd_);
+    int r = CloseHandle(hd_);
+    if(r==0){
+        return -1;
+    }
+    return 0;
 }
 
 //设置状态
@@ -55,7 +71,11 @@ int MyTap::SetStatus(bool st){
     code[0] = st ? 1 : 0;
     char buf[2048] = {0};
     DWORD n;
-    return DeviceIoControl(hd_, TAP_WIN_IOCTL_SET_MEDIA_STATUS, code, 4, buf, 2048, &n, nullptr);
+    int r = DeviceIoControl(hd_, TAP_WIN_IOCTL_SET_MEDIA_STATUS, code, 4, buf, 2048, &n, nullptr);
+    if(r==0){
+        return -1;
+    }
+    return 0;
 }
 
 //设置MAC
@@ -97,12 +117,22 @@ const MyMask *MyTap::GetMask() const
     return mask_;
 }
 
-//设置完mac,ip,掩码之后使用
+//设置完ip,掩码之后使用
 int MyTap::SetTAP()
 {
     DWORD rt = 0;
     unsigned char code[12] = {0};
-    
+    memcpy(code, ip_->data, 4);
+    MyIP net;
+    mask_->ToNetIPv4(ip_, &net);
+    memcpy(code + 4, net.data, 4);
+    mask_->ToIPv4Mask(code + 8);
+    char buf[2048] = {0};
+    int r = DeviceIoControl(hd_, TAP_WIN_IOCTL_CONFIG_TUN, code, 12, buf, 2048, &rt, nullptr);
+    if (r == 0)
+    {
+        return -1;
+    }
     return 0;
 }
 

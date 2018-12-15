@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 
+//获取注册表项的值
+std::string GetRegValue(const std::string& dir,const std::string name);
+
 //获取TAP设备的ID
 std::string GetTAPComponentId();
 

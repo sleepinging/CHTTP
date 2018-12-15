@@ -12,6 +12,7 @@ public:
 
 public:
   MyIP(/* args */);
+  MyIP(const std::string &ip);
   ~MyIP();
 
   //从字符串解析

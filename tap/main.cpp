@@ -19,32 +19,46 @@ void showerr(const char* msg=""){
 }
 
 int test(){
+    int r = 0;
     MyTap tap;
-    if (tap.Open() == -1)
+    if (tap.Open() !=0 )
     {
         showerr("open err");
         return -1;
     }
-    if (tap.SetStatus(true) == 0)
+    if (tap.SetStatus(true) != 0)
     {
-        showerr("control err");
+        showerr("enable err");
         return -1;
     }
-    if (tap.Close() == 0)
+    MyIP ip("192.168.9.138");
+    MyMAC mac("94:68:11:22:33:44");
+    MyMask mask(21);
+
+    tap.SetIP(&ip);
+    tap.SetMac(&mac);
+    tap.SetMask(&mask);
+
+    r = tap.SetTAP();
+    auto n = tap.Write("123456", 6);
+    char buf[2048] = {0};
+    n = tap.Read(buf, 2048);
+
+    if (tap.SetStatus(false) != 0)
+    {
+        showerr("disable err");
+        return -1;
+    }
+    if (tap.Close() != 0)
     {
         showerr("close err");
         return -1;
     }
-    return 0;
+    return r;
 }
 
 int main(/*int argc, char const *argv[]*/)
 {
-    MyMask mask(21);
-    unsigned char buf[4];
-    mask.ToIPv4Mask(buf);
-    MyIP ip,net;
-    ip.Parse("192.168.9.138");
-    mask.ToNetIPv4(&ip, &net);
+    test();
     return 0;
 }

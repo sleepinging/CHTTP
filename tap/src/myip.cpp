@@ -16,6 +16,13 @@ MyIP::~MyIP()
 {
 }
 
+MyIP::MyIP(const std::string &ip)
+{
+    if(Parse(ip)==-1){
+        throw "ip err";
+    }
+}
+
 //从字符串解析
 int MyIP::Parse(const std::string &ip){
     int iplen = ip.length();

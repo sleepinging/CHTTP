@@ -12,6 +12,7 @@ public:
 
 public:
   MyMAC(/* args */);
+  MyMAC(const std::string &mac);
   ~MyMAC();
 
   //从字符串解析
