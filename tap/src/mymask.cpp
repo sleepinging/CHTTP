@@ -50,3 +50,11 @@ void MyMask::ToNetIPv4(MyIP *ip, MyIP *net)
     net->data[1] = rb >> 16;
     net->data[0] = rb >> 24;
 }
+
+//转字符串
+std::string MyMask::ToString()
+{
+    MyIP ip;
+    this->ToIPv4Mask(ip.data);
+    return ip.ToString();
+}

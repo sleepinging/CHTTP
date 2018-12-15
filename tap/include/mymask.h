@@ -4,6 +4,7 @@
 #define __H__MYMASK__H__
 
 //#include <stdint.h>
+#include <string>
 
 class MyIP;
 
@@ -23,6 +24,9 @@ public:
 
   //获取网络地址,如192.168.9.138/21->192.168.8.0
   void ToNetIPv4(MyIP* ip,MyIP* net);
+
+  //转字符串
+  std::string ToString();
 };
 
 #endif // __H__MYMASK__H__

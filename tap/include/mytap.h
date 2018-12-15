@@ -20,6 +20,12 @@ private:
   MyIP *ip_ = nullptr;
   MyMask *mask_ = nullptr;
 
+  //id
+  std::string id_;
+
+  //完整设备名
+  std::string dname_;
+
   //适配器名字
   std::string name_;
 
@@ -39,7 +45,7 @@ public:
   //关闭tap设备,返回0成功
   int Close();
 
-  //设置状态,返回0成功
+  //设置状态(连接|断开),返回0成功
   int SetStatus(bool st);
 
   //设置MAC
@@ -48,17 +54,20 @@ public:
   //获取MAC
   const MyMAC *GetMAC() const;
 
-  //设置IP
-  int SetIP(MyIP *ip);
+  //设置IP和掩码,返回0成功
+  int SetIPMask(MyIP *ip,MyMask* mask);
 
   //获取IP
   const MyIP *GetIP() const;
 
-  //设置掩码
-  int SetMask(const MyMask *mask);
-
   //获取掩码
   const MyMask *GetMask() const;
+
+  //启用tap设备
+  int SetEnable();
+
+  //禁用tap设备
+  int SetDisable();
 
   //设置完mac,ip,掩码之后使用,返回0成功
   int SetTAP();

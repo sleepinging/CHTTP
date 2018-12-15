@@ -1,5 +1,7 @@
 #include <string>
 
+#include <iostream>
+
 #include <Windows.h>
 
 #include "tap-windows.h"
@@ -19,6 +21,7 @@ void showerr(const char* msg=""){
 }
 
 int test(){
+    ExecCmd({"ping"},false);
     int r = 0;
     MyTap tap;
     if (tap.Open() !=0 )
@@ -31,18 +34,24 @@ int test(){
         showerr("enable err");
         return -1;
     }
-    MyIP ip("192.168.9.138");
-    MyMAC mac("94:68:11:22:33:44");
-    MyMask mask(21);
 
-    tap.SetIP(&ip);
+    tap.SetEnable();
+
+    MyIP ip("192.168.9.138");
+    MyMask mask(21);
+    tap.SetIPMask(&ip,&mask);
+
+    MyMAC mac("94:68:11:22:33:44");
     tap.SetMac(&mac);
-    tap.SetMask(&mask);
 
     r = tap.SetTAP();
     auto n = tap.Write("123456", 6);
     char buf[2048] = {0};
     n = tap.Read(buf, 2048);
+
+    cout << "read:" << buf << endl;
+
+    tap.SetDisable();
 
     if (tap.SetStatus(false) != 0)
     {

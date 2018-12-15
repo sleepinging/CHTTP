@@ -1,5 +1,9 @@
 #include "mytool.h"
 
+#include <stdlib.h>
+
+#include <iostream>
+
 #include <Windows.h>
 
 #include "tap-windows.h"
@@ -89,6 +93,25 @@ std::string GetRegValue(const std::string &dir, const std::string name){
     //关闭注册表
     ::RegCloseKey(hKeyResult);
     return strValue;
+}
+
+//执行系统命令
+int ExecCmd(std::initializer_list<std::string> cmds, bool show)
+{
+    if (cmds.size()==0){
+        return 0;
+    }
+    string cmd("");
+    for (auto it=cmds.begin(); it<cmds.end()-1;++it){
+        cmd += *it + " ";
+    }
+    cmd +=*(cmds.end() - 1);
+    if(!show){
+        cmd += " > NUL";
+    }else{
+        cout << cmd << endl;
+    }
+    return system(cmd.c_str());
 }
 
 //将1个字符转为数字(16进制)

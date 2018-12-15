@@ -20,6 +20,18 @@ MyTap::MyTap(/* args */)
     mac_ = new MyMAC();
     ip_ = new MyIP();
     mask_ = new MyMask();
+
+    id_ = GetTAPComponentId();
+    dname_ = "\\\\.\\Global\\" + id_ + ".tap";
+    name_ = GetRegValue(ADAPTER_NAME_KEY + id_ + "\\Connection", "Name");
+    if (name_ == "")
+    {
+        cout << "get adapter nama failed!" << endl;
+        throw "get adapter nama failed!";
+    }
+    //最好先使用netsh interface show interface [名字]
+    //判断状态，直接设置启用也可以
+    this->SetEnable();
 }
 
 MyTap::~MyTap()
@@ -33,10 +45,9 @@ MyTap::~MyTap()
 //打开tap设备
 int MyTap::Open(bool zs)
 {
-    auto id = GetTAPComponentId();
-    id = "\\\\.\\Global\\" + id + ".tap";
+    
     hd_ = CreateFileA(
-        id.c_str(),
+        dname_.c_str(),
         GENERIC_READ | GENERIC_WRITE,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         nullptr,
@@ -46,10 +57,6 @@ int MyTap::Open(bool zs)
     zs_ = zs;
     if (hd_ == INVALID_HANDLE_VALUE){
         return -1;
-    }
-    name_ = GetRegValue(ADAPTER_NAME_KEY, "Name");
-    if(name_==""){
-        return -2;
     }
     cout << name_ << endl;
     return 0;
@@ -90,25 +97,21 @@ const MyMAC *MyTap::GetMAC() const{
     return mac_;
 }
 
-//设置IP
-int MyTap::SetIP(MyIP *ip){
-
+//设置IP和掩码
+int MyTap::SetIPMask(MyIP *ip, MyMask *mask)
+{
     *ip_ = *ip;
-    return 0;
+    *mask_ = *mask;
+    int r = 0;
+    string namecmd = "\"" + name_ + "\"";
+    r=ExecCmd({"netsh", "interface", "ip", "set", "address", namecmd, "static", ip_->ToString(), mask_->ToString()});
+    return r;
 }
 
 //获取IP
 const MyIP *MyTap::GetIP() const
 {
     return ip_;
-}
-
-//设置掩码
-int MyTap::SetMask(const MyMask *mask)
-{
-
-    *mask_ = *mask;
-    return 0;
 }
 
 //获取掩码
@@ -134,6 +137,24 @@ int MyTap::SetTAP()
         return -1;
     }
     return 0;
+}
+
+//启用tap设备
+int MyTap::SetEnable()
+{
+    string namecmd = "\"" + name_ + "\"";
+    int r = 0;
+    r = ExecCmd({"netsh", "interface", "set", "interface", namecmd, "ENABLED"});
+    return r;
+}
+
+//禁用tap设备
+int MyTap::SetDisable()
+{
+    string namecmd = "\"" + name_ + "\"";
+    int r = 0;
+    r = ExecCmd({"netsh", "interface", "set", "interface", namecmd, "DISABLED"});
+    return r;
 }
 
 //读取
