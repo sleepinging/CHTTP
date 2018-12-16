@@ -1,6 +1,7 @@
 #include "myip.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #include <vector>
 
@@ -14,6 +15,12 @@ MyIP::MyIP(/* args */)
 
 MyIP::~MyIP()
 {
+}
+
+//复制
+MyIP::MyIP(const MyIP &ip)
+{
+    memcpy(this->data, ip.data, 4);
 }
 
 MyIP::MyIP(const std::string &ip)
@@ -53,4 +60,10 @@ std::string MyIP::ToString() const{
     char buf[15] = {0};
     sprintf(buf, "%d.%d.%d.%d", data[0], data[1], data[2], data[3]);
     return buf;
+}
+
+//比较
+bool MyIP::operator==(const MyIP &ip) const
+{
+    return memcmp(this->data, ip.data, 4) == 0;
 }

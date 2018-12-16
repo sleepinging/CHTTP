@@ -14,12 +14,19 @@ public:
   MyIP(/* args */);
   MyIP(const std::string &ip);
   ~MyIP();
+  
+  //复制
+  MyIP(const MyIP &ip);
 
   //从字符串解析
   int Parse(const std::string &ip);
 
   //转为字符串
   std::string ToString() const;
+
+  //比较
+  bool operator==(const MyIP &ip) const;
+
 };
 
 #endif // __H__MYIP__H__

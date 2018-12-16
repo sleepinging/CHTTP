@@ -3,6 +3,8 @@
 #if !defined(__H__MYTOOL__H__)
 #define __H__MYTOOL__H__
 
+#include <stdint.h>
+
 #include <string>
 #include <initializer_list>
 
@@ -17,6 +19,19 @@ std::string GetTAPComponentId();
 
 //执行系统命令,默认输出
 int ExecCmd(std::initializer_list<std::string> cmds,bool show=true);
+
+namespace BigEndian{
+    template<typename T>
+    T Read(const unsigned char* buf){
+        auto sz = sizeof(T);
+        T t=0;
+        for (unsigned int i = 0; i < sz;++i){
+            t <<= 8;
+            t |= buf[i];
+        }
+        return t;
+    }
+}
 
 //安全删除
 #define SafeDelete(p) do{delete(p);(p)=nullptr;}while(0)

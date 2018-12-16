@@ -1,5 +1,6 @@
-#include <string>
+#include <stdio.h>
 
+#include <string>
 #include <iostream>
 
 #include <Windows.h>
@@ -11,6 +12,7 @@
 #include "mymac.h"
 #include "mymask.h"
 #include "mytool.h"
+#include "mypacket.h"
 
 using namespace std;
 
@@ -23,26 +25,32 @@ void showerr(const char* msg=""){
 int test(){
     int r = 0;
     MyTap tap;
-    if (tap.Open() !=0 )
+
+    MyMAC mac("01:02:03:04:05:07");
+    if(tap.SetMac(&mac)!=0){
+        showerr("set mac err");
+        return -1;
+    }
+
+    tap.SetDisable();
+    tap.SetEnable();
+
+    if (tap.Open() != 0)
     {
         showerr("open err");
         return -1;
     }
-    if (tap.SetStatus(true) != 0)
-    {
-        showerr("enable err");
+
+    MyIP ip("192.168.10.100");
+    MyMask mask(24);
+    if(tap.SetIPMask(&ip, &mask)!=0){
+        showerr("set ip and mask err");
         return -1;
     }
 
-    tap.SetEnable();
-
-    MyIP ip("192.168.9.138");
-    MyMask mask(21);
-    tap.SetIPMask(&ip,&mask);
-
-    MyMAC mac("94:68:11:22:33:44");
-    if(tap.SetMac(&mac)!=0){
-        showerr("set mac err");
+    if (tap.SetStatus(true) != 0)
+    {
+        showerr("enable err");
         return -1;
     }
 
@@ -52,12 +60,22 @@ int test(){
         return -1;
     }
 
-    // r = tap.SetTAP();
-    // auto n = tap.Write("123456", 6);
-    // char buf[2048] = {0};
-    // n = tap.Read(buf, 2048);
+    r = tap.SetTAP();
 
-    // cout << "read:" << buf << endl;
+    int n = 0;
+    //n = tap.Write("123456", 6);
+    unsigned char buf[2048] = {0};
+
+    while((n = tap.Read((char*)buf, 2048))>=0){
+        // if(buf[12]!=0x08||buf[13]!=0x00){
+        //     continue;
+        // }
+        cout << "read:" << endl;
+        for (int i = 0; i < n;++i){
+            putchar(buf[i]);
+        }
+        cout << endl;
+    }
 
     //tap.SetDisable();
 

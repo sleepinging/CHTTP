@@ -23,16 +23,16 @@ MyTap::MyTap(/* args */)
     mask_ = new MyMask();
 
     id_ = GetTAPComponentId();
-    dname_ = "\\\\.\\Global\\" + id_ + ".tap";
+    dname_ = USERMODEDEVICEDIR + id_ + TAP_WIN_SUFFIX;
     name_ = GetRegValue(NETWORK_CONNECTIONS_KEY + ("\\"+id_) + "\\Connection", "Name");
     if (name_ == "")
     {
         cout << "get adapter nama failed!" << endl;
         throw "get adapter nama failed!";
     }
-    //最好先使用netsh interface show interface [名字]
-    //判断状态，直接设置启用也可以
-    this->SetEnable();
+    // //最好先使用netsh interface show interface [名字]
+    // //判断状态，直接设置启用也可以
+    // this->SetEnable();
 }
 
 MyTap::~MyTap()
@@ -59,7 +59,7 @@ int MyTap::Open(bool zs)
     if (hd_ == INVALID_HANDLE_VALUE){
         return -1;
     }
-    cout << name_ << endl;
+    //cout << name_ << endl;
     return 0;
 }
 

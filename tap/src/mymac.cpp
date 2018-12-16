@@ -1,5 +1,7 @@
 #include "mymac.h"
 
+#include <string.h>
+
 #include "mystring.h"
 
 using namespace std;
@@ -68,4 +70,9 @@ std::string MyMAC::ToUp(const char chsp) const
     }
     hextoA(data[5], &mac[10 + 5 * splen]);
     return mac;
+}
+
+bool MyMAC::operator==(const MyMAC &mac) const
+{
+    return memcmp(this->data, mac.data, 6) == 0;
 }

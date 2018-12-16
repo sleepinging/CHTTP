@@ -23,6 +23,9 @@ public:
 
   //转为大写字符串,加上分隔符
   std::string ToUp(const char chsp = ':') const;
+
+  //比较
+  bool operator==(const MyMAC &mac) const;
 };
 
 #endif // __H__MYMAC__H__
