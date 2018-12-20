@@ -63,24 +63,19 @@ int test(){
         return -1;
     }
 
-    r = tap.SetTAP();
+    //r = tap.SetTUN();
 
     int n = 0;
-    // //至少写入20字节
-    // n = tap.Write("12345678901234567890", 20);
-    unsigned char bufarr[2048 + 14] = {0};
-    memcpy(bufarr, mac.data, 6);
-    memcpy(bufarr+6, mac.data, 6);
-    bufarr[12] = 0x08;
-    bufarr[13] = 0x00;
-    unsigned char *buf = bufarr + 14;
+    // //TUN至少写入20字节,TAP至少写入14字节
+    // n = tap.Write("12345678901234567890", 14);
+    unsigned char buf[2048 + 14] = {0};
 
     while((n = tap.Read((char*)buf, 2048))>=0){
         static int c = 0;
         cout << ++c << " read:" << n << endl;
 
         Packet* p = new Packet();
-        if(0==p->Parse(bufarr, n)){
+        if(0==p->Parse(buf, n)){
             p->print();
         }
 

@@ -129,8 +129,8 @@ const MyMask *MyTap::GetMask() const
     return mask_;
 }
 
-//设置完ip,掩码之后使用
-int MyTap::SetTAP()
+//使用TUN,设置完ip,掩码之后使用
+int MyTap::SetTUN()
 {
     DWORD rt = 0;
     unsigned char code[12] = {0};

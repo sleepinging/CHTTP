@@ -74,13 +74,13 @@ public:
   //禁用tap设备
   int SetDisable();
 
-  //设置完mac,ip,掩码之后使用,返回0成功
-  int SetTAP();
+  //使用TUN,设置完mac,ip,掩码之后使用,返回0成功
+  int SetTUN();
 
-  //读取
+  //读取,TAP从第二层(MAC层)开始,TUN从第三层(IP层)开始
   size_t Read(char *buf, size_t buflen);
 
-  //写入
+  //写入,TAP从第二层(MAC层)开始,TUN从第三层(IP层)开始
   size_t Write(const char *buf, size_t buflen);
 };
 
