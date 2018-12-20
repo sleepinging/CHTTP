@@ -30,10 +30,13 @@ private:
   MyIP *ip_ = nullptr;
   ConnType tp_;
 
+  int localport_;
+
 public:
   MyConn(/* args */);
   MyConn(SOCKET_FD fd,int port,MyIP* ip);
   ~MyConn();
+  friend class MySocket;
 
   //读取
   int Read(char *buf, size_t len);

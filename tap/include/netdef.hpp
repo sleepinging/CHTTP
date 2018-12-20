@@ -20,11 +20,19 @@ enum class PacketType
 };
 
 //传输层协议
-enum class TransProtocol
+enum class TransProtocol:unsigned short
 {
     ICMP = 1,
     TCP = 6,
     UDP = 17
+};
+
+//TCP标识
+enum class TCPFlag : unsigned char
+{
+    RST = 0x04,
+    SYN = 0x02,
+    FIN = 0x01
 };
 
 //MAC头，6+6+2=14字节

@@ -6,16 +6,19 @@
 
 MyConn::MyConn(/* args */)
 {
+    ip_ = new MyIP();
 }
 
 MyConn::MyConn(SOCKET_FD fd, int port, MyIP *ip)
     :fd_(fd),port_(port)
 {
+    ip_ = new MyIP();
     *ip_ = *ip;
 }
 
 MyConn::~MyConn()
 {
+    delete ip_;
 }
 
 //设置发送超时

@@ -106,3 +106,24 @@ std::string &trim(std::string &s)
     s.erase(s.find_last_not_of(" ") + 1);
     return s;
 }
+
+void myasscrt(bool f,const char* msg){
+    if(!f){
+        throw msg;
+    }
+}
+
+uint16_t in_checksum(const void *buf, int len)
+{
+    myasscrt(len % 2 == 0,"len must 2 times");
+    const uint16_t *data = static_cast<const uint16_t *>(buf);
+    int sum = 0;
+    for (int i = 0; i < len; i += 2)
+    {
+        sum += *data++;
+    }
+    // while (sum >> 16)
+    sum = (sum & 0xFFFF) + (sum >> 16);
+    myasscrt(sum <= 0xFFFF, "");
+    return ~sum;
+}

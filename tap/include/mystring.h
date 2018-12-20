@@ -25,6 +25,12 @@ void split(const std::string &s, const std::string &c, std::vector<std::string> 
 //去除首尾空格
 std::string &trim(std::string &s);
 
+//断言
+void myasscrt(bool f, const char *msg = "asscrt wrong");
+
+//校验和
+uint16_t in_checksum(const void *buf, int len);
+
 //字符串转换
 template <typename S, typename D>
 D mytrans(const S &s)

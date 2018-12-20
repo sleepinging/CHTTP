@@ -1,6 +1,6 @@
 targetname=myvpn.exe
 
-OBJS=main.o mytap.o myip.o mymac.o mytool.o mymask.o mystring.o mypacket.o myconn.o
+OBJS=main.o mytap.o myip.o mymac.o mytool.o mymask.o mystring.o packet.o myconn.o mysocket.o
 
 GXX=g++
 
@@ -28,9 +28,11 @@ mymask.o:src/mymask.cpp include/mymask.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
 mystring.o:src/mystring.cpp include/mystring.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-mypacket.o:src/mypacket.cpp include/mypacket.h
+packet.o:src/packet.cpp include/packet.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
 myconn.o:src/myconn.cpp include/myconn.h
+	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
+mysocket.o:src/mysocket.cpp include/mysocket.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
 
 clean:
