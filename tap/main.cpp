@@ -1,12 +1,15 @@
 #include <stdio.h>
+#include <errno.h>
 
 #include <string>
 #include <iostream>
 
+#ifdef _WIN32
 #include <WinSock2.h>
 #include <Windows.h>
-
 #include "tap-windows.h"
+#endif
+
 
 #include "mytap.h"
 #include "myip.h"
@@ -20,12 +23,19 @@
 using namespace std;
 
 void showerr(const char* msg=""){
+#ifdef _WIN32
     char error[1000];
     sprintf(error, "%s %lu",msg, GetLastError());
     MessageBoxA(0, error, "error", 0);
+#else
+    // cout << "error:"<<msg << endl;
+    perror(msg);
+#endif
 }
 
-int test(){
+#ifdef _WIN32
+int testwin()
+{
     int r = 0;
     MyTap tap;
 
@@ -99,6 +109,11 @@ int test(){
     }
     return r;
 }
+#else
+int testunix(){
+    return 0;
+}
+#endif
 
 int init(){
     int r = 0;
@@ -114,15 +129,18 @@ int cleanup(){
 
 int connecttest(){
     MySocket ms;
-    MyIP ip("127.0.0.1");
-    auto cn = ms.Connect(&ip, 8875, ConnType::UDP,12345);
-    // auto cn = ms.Connect(&ip, 8876, ConnType::TCP);
-    int r=cn.Write("123", 3);
+    MyIP ip("192.168.1.100");
+    auto cn = ms.Connect(&ip, 8875, ConnType::UDP);
+    // auto cn = ms.Connect(&ip, 8876, ConnType::TCP,12346);
+    int r = cn.Write("123", 3);
     r = cn.Write("456", 3);
     r = cn.Write("798", 3);
     if(r<0){
         showerr("write");
     }
+    char buf[2048]={0};
+    r = cn.Read(buf, 2047);
+    cout << string(buf, r) << endl;
 
     return r;
 }
@@ -131,9 +149,14 @@ int main(/*int argc, char const *argv[]*/)
 {
     init();
 
-    //connecttest();
+    connecttest();
+    return 0;
 
-    test();
+#ifdef _WIN32
+    testwin();
+#else
+    testunix();
+#endif
 
     cleanup();
     return 0;

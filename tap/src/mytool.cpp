@@ -5,12 +5,14 @@
 
 #include <iostream>
 
+#ifdef _WIN32
 #include <Windows.h>
-
 #include "tap-windows.h"
+#endif
 
 using namespace std;
 
+#ifdef _WIN32
 std::string GetTAPComponentId()
 {
     char szOwnerKeyPath[] = ADAPTER_KEY;
@@ -155,6 +157,8 @@ int SetRegValueString(const std::string &dir, const std::string &name, const std
     return -1;
 }
 
+#endif
+
 //执行系统命令
 int ExecCmd(std::initializer_list<std::string> cmds, bool show)
 {
@@ -173,6 +177,7 @@ int ExecCmd(std::initializer_list<std::string> cmds, bool show)
     }
     return system(cmd.c_str());
 }
+
 
 namespace MyTime{
 //时间格式化

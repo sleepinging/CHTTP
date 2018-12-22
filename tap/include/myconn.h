@@ -20,12 +20,16 @@ enum class ConnType:unsigned short
 
 class MyIP;
 
+class sockaddr;
+
 class MyConn
 {
 private:
   SOCKET_FD fd_;
+  sockaddr* skt_addr_ = nullptr;
+  int sktaddrlen_ = 0;
 
-    //IP,端口和类型缓存
+  //IP,端口和类型缓存
   int port_;
   MyIP *ip_ = nullptr;
   ConnType tp_;

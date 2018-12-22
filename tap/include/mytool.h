@@ -8,6 +8,8 @@
 #include <string>
 #include <initializer_list>
 
+#ifdef _WIN32
+
 //获取注册表项的值
 std::string GetRegValue(const std::string& dir,const std::string name);
 
@@ -16,6 +18,8 @@ int SetRegValueString(const std::string &dir, const std::string &name, const std
 
 //获取TAP设备的ID
 std::string GetTAPComponentId();
+#else
+#endif
 
 //执行系统命令,默认输出
 int ExecCmd(std::initializer_list<std::string> cmds,bool show=true);

@@ -1,44 +1,71 @@
 #include "myconn.h"
 
-//#include <WinSock2.h>
+#ifdef _WIN32
+// #include <WinSock2.h>
+#else
+#include <unistd.h>
+#endif
 
 #include "myip.h"
 
 MyConn::MyConn(/* args */)
 {
     ip_ = new MyIP();
+    skt_addr_ = new sockaddr();
+    sktaddrlen_ = sizeof(sockaddr);
 }
 
 MyConn::MyConn(SOCKET_FD fd, int port, MyIP *ip)
     :fd_(fd),port_(port)
 {
     ip_ = new MyIP();
+    skt_addr_ = new sockaddr();
+    sktaddrlen_ = sizeof(sockaddr);
     *ip_ = *ip;
 }
 
 MyConn::~MyConn()
 {
     Close();
+    delete skt_addr_;
+    skt_addr_ = nullptr;
     delete ip_;
+    ip_ = nullptr;
 }
 
 //设置发送超时
 int MyConn::SetSendTimeOut(const int timeout)
 {
-    return setsockopt(fd_, SOL_SOCKET, SO_SNDTIMEO, (const char *)&timeout, sizeof(int));
+#ifdef _WIN32
+    char tv = timeout;
+#else
+    timeval tv = {timeout, 0};
+#endif
+    return setsockopt(fd_, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
 }
 
 //设置接收超时
 int MyConn::SetRecvTimeOut(const int timeout)
 {
-    return setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(int));
+#ifdef _WIN32
+    char tv = timeout;
+#else
+    timeval tv = {timeout, 0};
+#endif
+    return setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 }
 
 //读取
 int MyConn::Read(char *buf, size_t len)
 {
     int r = 0;
-    r=recv(fd_, (char *)buf, len, 0);
+    // switch (tp_){
+    // case ConnType::TCP:
+        r = recv(fd_, (char *)buf, len, 0);
+    //     break;
+    // case ConnType::UDP:
+    //     r = recvfrom(fd_, buf, len, 0, skt_addr_, &sktaddrlen_);
+    // }
     return r;
 }
 
@@ -46,7 +73,14 @@ int MyConn::Read(char *buf, size_t len)
 int MyConn::Write(const char *buf, size_t len)
 {
     int r = 0;
-    r=send(fd_, (const char *)buf, len, 0);
+    // switch (tp_)
+    // {
+    // case ConnType::TCP:
+        r = send(fd_, (const char *)buf, len, 0);
+    //     break;
+    // case ConnType::UDP:
+    //     r = sendto(fd_, buf, len, 0, skt_addr_, sktaddrlen_);
+    // }
     return r;
 }
 

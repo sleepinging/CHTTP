@@ -4,9 +4,12 @@
 
 #include <iostream>
 
-#include <Windows.h>
-
+#ifdef _WIN32
+#include <WinSock2.h>
 #include "tap-windows.h"
+#else
+using DWORD = unsigned long;
+#endif
 
 #include "mytool.h"
 #include "mystring.h"
@@ -22,6 +25,7 @@ MyTap::MyTap(/* args */)
     ip_ = new MyIP();
     mask_ = new MyMask();
 
+#ifdef _WIN32
     id_ = GetTAPComponentId();
     dname_ = USERMODEDEVICEDIR + id_ + TAP_WIN_SUFFIX;
     name_ = GetRegValue(NETWORK_CONNECTIONS_KEY + ("\\"+id_) + "\\Connection", "Name");
@@ -33,6 +37,9 @@ MyTap::MyTap(/* args */)
     // //最好先使用netsh interface show interface [名字]
     // //判断状态，直接设置启用也可以
     // this->SetEnable();
+#else
+
+#endif
 }
 
 MyTap::~MyTap()
@@ -40,13 +47,17 @@ MyTap::~MyTap()
     SafeDelete(mac_);
     SafeDelete(ip_);
     SafeDelete(mask_);
+#ifdef _WIN32
     CloseHandle(hd_);
+#else
+
+#endif
 }
 
 //打开tap设备
 int MyTap::Open(bool zs)
 {
-    
+#ifdef _WIN32
     hd_ = CreateFileA(
         dname_.c_str(),
         GENERIC_READ | GENERIC_WRITE,
@@ -59,6 +70,9 @@ int MyTap::Open(bool zs)
     if (hd_ == INVALID_HANDLE_VALUE){
         return -1;
     }
+#else
+
+#endif
     //cout << name_ << endl;
     return 0;
 }
@@ -66,15 +80,19 @@ int MyTap::Open(bool zs)
 //关闭tap设备
 int MyTap::Close()
 {
+#ifdef _WIN32
     int r = CloseHandle(hd_);
     if(r==0){
         return -1;
     }
+#else
+#endif
     return 0;
 }
 
 //设置状态
 int MyTap::SetStatus(bool st){
+#ifdef _WIN32
     char code[4] = {0};
     code[0] = st ? 1 : 0;
     char buf[2048] = {0};
@@ -83,13 +101,19 @@ int MyTap::SetStatus(bool st){
     if(r==0){
         return -1;
     }
+#else
+#endif
     return 0;
 }
 
 //设置MAC
 int MyTap::SetMac(const MyMAC *mac){
     *mac_ = *mac;
-    auto r=SetRegValueString(ADAPTER_KEY,"MAC",mac_->ToUp('\0'));
+    int r = 0;
+#ifdef _WIN32
+    r = SetRegValueString(ADAPTER_KEY, "MAC", mac_->ToUp('\0'));
+#else
+#endif
     return r;
 }
 
@@ -97,7 +121,11 @@ int MyTap::SetMac(const MyMAC *mac){
 int MyTap::SetMTU(unsigned short mtu)
 {
     mtu_ = mtu;
-    auto r = SetRegValueString(ADAPTER_KEY, "MTU",mytrans<unsigned short,string>(mtu_));
+    int r = 0;
+#ifdef _WIN32
+    r = SetRegValueString(ADAPTER_KEY, "MTU", mytrans<unsigned short, string>(mtu_));
+#else
+#endif
     return r;
 }
 
@@ -112,8 +140,11 @@ int MyTap::SetIPMask(MyIP *ip, MyMask *mask)
     *ip_ = *ip;
     *mask_ = *mask;
     int r = 0;
+#ifdef _WIN32
     string namecmd = "\"" + name_ + "\"";
     r=ExecCmd({"netsh", "interface", "ip", "set", "address", namecmd, "static", ip_->ToString(), mask_->ToString()});
+#else
+#endif
     return r;
 }
 
@@ -132,6 +163,7 @@ const MyMask *MyTap::GetMask() const
 //使用TUN,设置完ip,掩码之后使用
 int MyTap::SetTUN()
 {
+#ifdef _WIN32
     DWORD rt = 0;
     unsigned char code[12] = {0};
     memcpy(code, ip_->data, 4);
@@ -145,6 +177,8 @@ int MyTap::SetTUN()
     {
         return -1;
     }
+#else
+#endif
     return 0;
 }
 
@@ -153,35 +187,51 @@ int MyTap::SetEnable()
 {
     string namecmd = "\"" + name_ + "\"";
     int r = 0;
+#ifdef _WIN32
     r = ExecCmd({"netsh", "interface", "set", "interface", namecmd, "ENABLED"});
+#else
+#endif
     return r;
 }
 
 //禁用tap设备
 int MyTap::SetDisable()
 {
-    string namecmd = "\"" + name_ + "\"";
     int r = 0;
+#ifdef _WIN32
+    string namecmd = "\"" + name_ + "\"";
     r = ExecCmd({"netsh", "interface", "set", "interface", namecmd, "DISABLED"});
+#else
+#endif
     return r;
 }
 
 //读取
 size_t MyTap::Read(char *buf, size_t buflen){
+    size_t r = 0;
+#ifdef _WIN32
     DWORD rd = 0;
     if (zs_)
     {
         ReadFile(hd_, buf, buflen, &rd, nullptr);
     }
-    return rd;
+    r = rd;
+#else
+#endif
+    return r;
 }
 
 //写入
 size_t MyTap::Write(const char *buf, size_t buflen){
+    size_t r = 0;
+#ifdef _WIN32
     DWORD wd = 0;
     if (zs_)
     {
         WriteFile(hd_, buf, buflen, &wd, nullptr);
     }
-    return wd;
+    r = wd;
+#else
+#endif
+    return r;
 }
