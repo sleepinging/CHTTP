@@ -20,6 +20,11 @@ std::string GetTAPComponentId();
 //执行系统命令,默认输出
 int ExecCmd(std::initializer_list<std::string> cmds,bool show=true);
 
+namespace MyTime{
+//时间格式化
+std::string fmttime(time_t t, const std::string &fstr = "%Y-%m-%d %H:%M:%S");
+}
+
 namespace BigEndian{
     template<typename T>
     T Read(const unsigned char* buf){

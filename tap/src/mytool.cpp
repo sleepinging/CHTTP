@@ -1,6 +1,7 @@
 #include "mytool.h"
 
 #include <stdlib.h>
+#include <time.h>
 
 #include <iostream>
 
@@ -171,4 +172,14 @@ int ExecCmd(std::initializer_list<std::string> cmds, bool show)
         cout << cmd << endl;
     }
     return system(cmd.c_str());
+}
+
+namespace MyTime{
+//时间格式化
+std::string fmttime(time_t t, const std::string &fstr)
+{
+    char buf[64] = {0};
+    strftime(buf, 63, fstr.c_str(), localtime(&t));
+    return string(buf);
+}
 }

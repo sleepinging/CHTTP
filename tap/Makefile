@@ -6,7 +6,10 @@ GXX=g++
 
 CPP_INCLUDE_PATH=include
 
-LD_FLAGS=-lWs2_32
+LD_FLAGS_W=-lWs2_32
+LD_FLAGS_U=-lpthread
+
+LD_FLAGS=$(LD_FLAGS_W)
 
 BUILD_FLAG=-g -Wall -Wextra -std=c++11 #-static
 

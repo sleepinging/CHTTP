@@ -18,6 +18,7 @@ MyConn::MyConn(SOCKET_FD fd, int port, MyIP *ip)
 
 MyConn::~MyConn()
 {
+    Close();
     delete ip_;
 }
 

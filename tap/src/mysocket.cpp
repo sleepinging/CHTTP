@@ -37,6 +37,8 @@ MyConn MySocket::Connect(const MyIP *remoteip, int remoteport, ConnType type, in
         break;
     }
 
+    mc.fd_ = fd;
+
     if (fd == INVALID_SOCKET)
     {
         //int er = WSAGetLastError();
@@ -44,6 +46,35 @@ MyConn MySocket::Connect(const MyIP *remoteip, int remoteport, ConnType type, in
         throw "create socket failed";
         return mc;
     }
+
+    if(localport!=-1){
+        sockaddr_in service;
+        service.sin_family = AF_INET;
+        service.sin_addr.s_addr = inet_addr("127.0.0.1");
+        service.sin_port = htons(localport);
+
+        //----------------------
+        // Bind the socket.
+        if (bind(fd, (SOCKADDR *)&service, sizeof(service)) == SOCKET_ERROR)
+        {
+            mc.Close();
+            return mc;
+        }
+    }
+
+    //没本地端口
+    sockaddr_in server;
+    server.sin_family = AF_INET;
+    server.sin_port = htons(remoteport);
+    server.sin_addr.s_addr = inet_addr(remoteip->ToString().c_str());
+    if (connect(fd, (sockaddr *)&server, sizeof(server)) == SOCKET_ERROR)
+    {
+        cout << "connect failed" << endl;
+        throw "connect socket failed";
+        return mc;
+    }
+
+    
 
     return mc;
 }

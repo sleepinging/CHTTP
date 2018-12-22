@@ -19,6 +19,9 @@ public:
   static MyConn Connect(const MyIP *remoteip, int remoteport, ConnType type, int localport = -1);
   //static Listerner Listen();
 
+private:
+public:
+
   //windows需要初始化
   static int InitLib();
   static int CleanLib();

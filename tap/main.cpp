@@ -112,10 +112,27 @@ int cleanup(){
     return r;
 }
 
+int connecttest(){
+    MySocket ms;
+    MyIP ip("127.0.0.1");
+    auto cn = ms.Connect(&ip, 8875, ConnType::UDP,12345);
+    // auto cn = ms.Connect(&ip, 8876, ConnType::TCP);
+    int r=cn.Write("123", 3);
+    r = cn.Write("456", 3);
+    r = cn.Write("798", 3);
+    if(r<0){
+        showerr("write");
+    }
+
+    return r;
+}
+
 int main(/*int argc, char const *argv[]*/)
 {
     init();
-    
+
+    //connecttest();
+
     test();
 
     cleanup();
