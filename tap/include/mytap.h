@@ -6,6 +6,14 @@
 #include <stddef.h>
 #include <string>
 
+#ifdef _WIN32
+#define nullhandle nullptr
+using MYHANDLE = void *;
+#else
+using MYHANDLE = int;
+#define nullhandle -1
+#endif
+
 class MyIP;
 
 class MyMAC;
@@ -32,7 +40,7 @@ private:
   std::string name_;
 
   //设备句柄
-  void *hd_=nullptr;
+  MYHANDLE hd_ = nullhandle;
 
   //是否阻塞
   bool zs_ = true;
@@ -40,7 +48,10 @@ private:
 public:
   MyTap(/* args */);
   ~MyTap();
+  MyTap(const MyTap &tap);
+  MyTap(MyTap &&tap);
 
+public:
   //打开tap设备,返回0成功
   int Open(bool zs=true);
 
@@ -82,6 +93,13 @@ public:
 
   //写入,TAP从第二层(MAC层)开始,TUN从第三层(IP层)开始
   size_t Write(const char *buf, size_t buflen);
+private:
+  //打开tun设备,返回0成功,unix使用
+  int opentun(bool zs = true);
+
+public:
+  static MyTap NewTAP(MyMAC *mac, MyIP* ip,MyMask* mask);
+  static MyTap NewTUN(MyIP *ip, MyMask *mask);
 };
 
 #endif // __H__MYTAP__H__

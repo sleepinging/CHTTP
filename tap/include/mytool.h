@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <sstream>
 #include <initializer_list>
 
 #ifdef _WIN32

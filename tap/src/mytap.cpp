@@ -9,6 +9,14 @@
 #include "tap-windows.h"
 #else
 using DWORD = unsigned long;
+#include <net/if.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
+#include <sys/types.h>
+#include <linux/if_tun.h>
+#include <unistd.h>
 #endif
 
 #include "mytool.h"
@@ -54,9 +62,41 @@ MyTap::~MyTap()
 #endif
 }
 
+MyTap::MyTap(const MyTap &tap)
+{
+    *mac_ = *tap.mac_;
+    *ip_ = *tap.ip_;
+    *mask_ = *tap.mask_;
+    mtu_ = tap.mtu_;
+    id_ = tap.id_;
+    name_ = tap.name_;
+    dname_ = tap.dname_;
+    hd_ = tap.hd_;
+    zs_ = tap.zs_;
+}
+
+MyTap::MyTap(MyTap &&tap)
+{
+    mac_ = tap.mac_;
+    tap.mac_ = nullptr;
+    ip_ = tap.ip_;
+    tap.ip_ = nullptr;
+    mask_ = tap.mask_;
+    tap.mask_ = nullptr;
+
+    id_ = std::move(tap.id_);
+    name_ = std::move(tap.name_);
+    dname_ = std::move(tap.dname_);
+
+    mtu_ = tap.mtu_;
+    hd_ = tap.hd_;
+    zs_ = tap.zs_;
+}
+
 //打开tap设备
 int MyTap::Open(bool zs)
 {
+    zs_ = zs;
 #ifdef _WIN32
     hd_ = CreateFileA(
         dname_.c_str(),
@@ -64,17 +104,87 @@ int MyTap::Open(bool zs)
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         nullptr,
         OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL | zs ? 0 : FILE_FLAG_OVERLAPPED,
+        FILE_ATTRIBUTE_NORMAL | (zs ? 0 : FILE_FLAG_OVERLAPPED),
         nullptr);
-    zs_ = zs;
+    
     if (hd_ == INVALID_HANDLE_VALUE){
         return -1;
     }
 #else
+    struct ifreq ifr;
+    int fd, err;
+    const char *clonedev = "/dev/net/tun";
+
+    // IFF_TUN:
+    //     创建一个点对点设备
+    // IFF_TAP:
+    //     创建一个以太网设备
+    // IFF_NO_PI:
+    //     不包含包信息，默认的每个数据包当传到用户空间时，都将包含一个附加的包头来保存包信息
+    // IFF_ONE_QUEUE:
+    //     采用单一队列模式，即当数据包队列满的时候，由虚拟网络设备自已丢弃以后的数据包直到数据包队列再有空闲。
+    int flags = IFF_TAP | IFF_NO_PI | (zs ? 0 : IFF_ONE_QUEUE);
+
+    if ((fd = open(clonedev, O_RDWR)) < 0)
+    {
+        perror("open failed");
+        return fd;
+    }
+
+    memset(&ifr, 0, sizeof(ifr));
+    ifr.ifr_flags = flags;
+
+    if ((err = ioctl(fd, TUNSETIFF, (void *)&ifr)) < 0)
+    {
+        perror("ioctl failed");
+        close(fd);
+        return err;
+    }
+
+    // printf("Open tun/tap device: %s for reading...\n", ifr.ifr_name);
+
+    hd_ = fd;
+    name_ = ifr.ifr_name;
 
 #endif
     //cout << name_ << endl;
     return 0;
+}
+
+int MyTap::opentun(bool zs)
+{
+    int r = 0;
+    zs_ = zs;
+#ifdef _WIN32
+#else
+    struct ifreq ifr;
+    int fd, err;
+    const char *clonedev = "/dev/net/tun";
+
+    int flags = IFF_TUN | IFF_NO_PI | (zs ? 0 : IFF_ONE_QUEUE);
+
+    if ((fd = open(clonedev, O_RDWR)) < 0)
+    {
+        perror("open failed");
+        return fd;
+    }
+
+    memset(&ifr, 0, sizeof(ifr));
+    ifr.ifr_flags = flags;
+
+    if ((err = ioctl(fd, TUNSETIFF, (void *)&ifr)) < 0)
+    {
+        perror("ioctl failed");
+        close(fd);
+        return err;
+    }
+
+    // printf("Open tun/tap device: %s for reading...\n", ifr.ifr_name);
+
+    hd_ = fd;
+    name_ = ifr.ifr_name;
+#endif
+    return r;
 }
 
 //关闭tap设备
@@ -102,6 +212,7 @@ int MyTap::SetStatus(bool st){
         return -1;
     }
 #else
+    st = st;
 #endif
     return 0;
 }
@@ -113,6 +224,9 @@ int MyTap::SetMac(const MyMAC *mac){
 #ifdef _WIN32
     r = SetRegValueString(ADAPTER_KEY, "MAC", mac_->ToUp('\0'));
 #else
+    //sudo ifconfig eth0 hw ether 00:15:58:c2:85:c8
+    string cmd = "ifconfig " + name_ + " hw ether "+mac_->ToUp(':');
+    r = ExecCmd({cmd});
 #endif
     return r;
 }
@@ -125,6 +239,9 @@ int MyTap::SetMTU(unsigned short mtu)
 #ifdef _WIN32
     r = SetRegValueString(ADAPTER_KEY, "MTU", mytrans<unsigned short, string>(mtu_));
 #else
+    //sudo ifconfig tap0 mtu 1400
+    string cmd = "ifconfig " + name_ + " mtu " + mytrans<unsigned short, string>(mtu);
+    r = ExecCmd({cmd});
 #endif
     return r;
 }
@@ -144,6 +261,9 @@ int MyTap::SetIPMask(MyIP *ip, MyMask *mask)
     string namecmd = "\"" + name_ + "\"";
     r=ExecCmd({"netsh", "interface", "ip", "set", "address", namecmd, "static", ip_->ToString(), mask_->ToString()});
 #else
+    //ip addr add 192.168.209.138/24 dev tun0
+    string namecmd = "ip addr add " + ip_->ToString() + "/" + mytrans<int, string>(mask_->value)+" dev "+name_;
+    r = ExecCmd({namecmd});
 #endif
     return r;
 }
@@ -178,6 +298,19 @@ int MyTap::SetTUN()
         return -1;
     }
 #else
+    // struct ifreq ifr;
+    // int err;
+    // int flags = IFF_TUN | IFF_NO_PI | (zs_ ? 0 : IFF_ONE_QUEUE);
+    // memset(&ifr, 0, sizeof(ifr));
+    // ifr.ifr_flags = flags;
+
+    // if ((err = ioctl(hd_, TUNSETIFF, (void *)&ifr)) < 0)
+    // {
+    //     perror("ioctl failed");
+    //     close(hd_);
+    //     return err;
+    // }
+    // name_ = ifr.ifr_name;
 #endif
     return 0;
 }
@@ -185,11 +318,14 @@ int MyTap::SetTUN()
 //启用tap设备
 int MyTap::SetEnable()
 {
-    string namecmd = "\"" + name_ + "\"";
     int r = 0;
 #ifdef _WIN32
+    string namecmd = "\"" + name_ + "\"";
     r = ExecCmd({"netsh", "interface", "set", "interface", namecmd, "ENABLED"});
 #else
+    //ip link set dev tun0 up
+    string namecmd = "ip link set dev " + name_ + " up";
+    r = ExecCmd({namecmd});
 #endif
     return r;
 }
@@ -202,6 +338,9 @@ int MyTap::SetDisable()
     string namecmd = "\"" + name_ + "\"";
     r = ExecCmd({"netsh", "interface", "set", "interface", namecmd, "DISABLED"});
 #else
+    //ip link set dev tun0 down
+    string namecmd = "ip link set dev " + name_ + " down";
+    r = ExecCmd({namecmd});
 #endif
     return r;
 }
@@ -217,6 +356,7 @@ size_t MyTap::Read(char *buf, size_t buflen){
     }
     r = rd;
 #else
+    r = read(hd_, buf, buflen);
 #endif
     return r;
 }
@@ -232,6 +372,113 @@ size_t MyTap::Write(const char *buf, size_t buflen){
     }
     r = wd;
 #else
+    r = write(hd_, buf, buflen);
 #endif
     return r;
+}
+
+MyTap MyTap::NewTAP(MyMAC *mac, MyIP *ip, MyMask *mask){
+    MyTap tap;
+#ifdef _WIN32
+    if (tap.SetMac(mac) != 0)
+    {
+        throw("set mac err");
+        return tap;
+    }
+
+    tap.SetDisable();
+    tap.SetEnable();
+
+    if (tap.Open() != 0)
+    {
+        throw("open err");
+        return tap;
+    }
+
+    if (tap.SetIPMask(ip, mask) != 0)
+    {
+        throw("set ip and mask err");
+        return tap;
+    }
+
+    if (tap.SetStatus(true) != 0)
+    {
+        throw("enable err");
+        return tap;
+    }
+
+    // if (tap.SetMTU(1400) != 0)
+    // {
+    //     throw("set mtu err");
+    //     return tap;
+    // }
+#else
+    if (tap.Open() != 0)
+    {
+        throw("open err");
+        return tap;
+    }
+    if (tap.SetIPMask(ip, mask) != 0)
+    {
+        throw("set ip and mask err");
+        return tap;
+    }
+    tap.SetEnable();
+    if (tap.SetMac(mac) != 0)
+    {
+        throw("set mac err");
+        return tap;
+    }
+
+#endif
+    return tap;
+}
+
+MyTap MyTap::NewTUN(MyIP *ip, MyMask *mask)
+{
+    MyTap tap;
+#ifdef _WIN32
+    tap.SetDisable();
+    tap.SetEnable();
+
+    if (tap.Open() != 0)
+    {
+        throw("open err");
+        return tap;
+    }
+
+    if (tap.SetIPMask(ip, mask) != 0)
+    {
+        throw("set ip and mask err");
+        return tap;
+    }
+
+    if (tap.SetStatus(true) != 0)
+    {
+        throw("enable err");
+        return tap;
+    }
+    if(tap.SetTUN()!=0){
+        throw("set tap err");
+        return tap;
+    }
+#else
+    if (tap.opentun() != 0)
+    {
+        throw("open err");
+        return tap;
+    }
+    if (tap.SetIPMask(ip, mask) != 0)
+    {
+        throw("set ip and mask err");
+        return tap;
+    }
+    if (tap.SetTUN() != 0)
+    {
+        throw("set tap err");
+        return tap;
+    }
+    tap.SetEnable();
+#endif
+    return tap;
 }
