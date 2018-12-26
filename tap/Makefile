@@ -3,7 +3,7 @@ targetname=myvpn.exe
 OBJS=main.o \
 mytap.o myip.o mymac.o mytool.o mymask.o \
 mystring.o packet.o myconn.o mysocket.o \
-mycrypto.o
+mycrypto.o mybufconn.o
 
 GXX=g++
 
@@ -19,7 +19,7 @@ BUILD_FLAG=-g -Wall -Wextra -std=c++11 #-static
 #$@--目标文件，$^--所有的依赖文件，$<--第一个依赖文件。
 
 main:$(OBJS)
-	$(GXX) $^ $(LD_FLAGS) $(BUILD_FLAG) -o $(targetname)
+	$(GXX) $^ $(LD_FLAGS) -o $(targetname)
 main.o:main.cpp
 	$(GXX) -c $^ -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
 mytap.o:src/mytap.cpp include/mytap.h
@@ -41,6 +41,8 @@ myconn.o:src/myconn.cpp include/myconn.h
 mysocket.o:src/mysocket.cpp include/mysocket.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
 mycrypto.o:src/mycrypto.cpp include/mycrypto.h
+	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
+mybufconn.o:src/mybufconn.cpp include/mybufconn.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
 
 clean:
