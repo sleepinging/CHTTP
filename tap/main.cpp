@@ -83,7 +83,7 @@ int testunix(){
     int r = 0;
 
     MyMAC mac("00:01:23:45:67:89");
-    MyIP ip("192.168.10.100");
+    MyIP ip("192.168.10.110");
     MyMask mask(24);
 
     auto tap = MyTap::NewTAP(&mac, &ip, &mask);
@@ -148,7 +148,7 @@ int main(/*int argc, char const *argv[]*/)
 {
     init();
 
-    connecttest();
+    // connecttest();
 
 #ifdef _WIN32
     testwin();
