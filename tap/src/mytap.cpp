@@ -345,6 +345,29 @@ int MyTap::SetDisable()
     return r;
 }
 
+#ifdef _WIN32
+int getOverlappedResult(HANDLE hd, LPOVERLAPPED poa)
+{
+    DWORD n;
+    if (GetOverlappedResult(hd, poa, &n, 1) == FALSE)
+    {
+        return -1;
+    }
+    return n;
+}
+
+int newOverlapped(LPOVERLAPPED poa)
+{
+    HANDLE h= CreateEventA(0, 1, 0, 0);
+    if(h==nullptr){
+        return -1;
+    }
+    poa->hEvent = h;
+    return 1;
+}
+
+#endif
+
 //读取
 size_t MyTap::Read(char *buf, size_t buflen){
     size_t r = 0;
@@ -352,9 +375,19 @@ size_t MyTap::Read(char *buf, size_t buflen){
     DWORD rd = 0;
     if (zs_)
     {
-        ReadFile(hd_, buf, buflen, &rd, nullptr);
+        ReadFile(hd_, buf, buflen, &rd,nullptr);
+        r = rd;
+    }else{
+        OVERLAPPED poa;
+        newOverlapped(&poa);
+        if (ResetEvent(poa.hEvent) == FALSE)
+        {
+            cout << "ResetEvent failed" << endl;
+            return r;
+        }
+        ReadFile(hd_, buf, buflen, &rd, &poa);
+        r = getOverlappedResult(hd_, &poa);
     }
-    r = rd;
 #else
     r = read(hd_, buf, buflen);
 #endif
@@ -369,8 +402,17 @@ size_t MyTap::Write(const char *buf, size_t buflen){
     if (zs_)
     {
         WriteFile(hd_, buf, buflen, &wd, nullptr);
+        r = wd;
+    }else{
+        OVERLAPPED poa;
+        newOverlapped(&poa);
+        if(ResetEvent(poa.hEvent)==FALSE){
+            cout << "ResetEvent failed" << endl;
+            return r;
+        }
+        WriteFile(hd_, buf, buflen, &wd, &poa);
+        r = getOverlappedResult(hd_, &poa);
     }
-    r = wd;
 #else
     r = write(hd_, buf, buflen);
 #endif

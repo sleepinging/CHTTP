@@ -107,6 +107,8 @@ MyConn MySocket::Connect(const MyIP *remoteip, int remoteport, ConnType type, in
         return mc;
     }
 
+    mc.conned = true;
+
     return mc;
 }
 

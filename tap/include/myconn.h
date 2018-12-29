@@ -36,11 +36,17 @@ private:
 
   int localport_;
 
+  bool conned = false;
+
 public:
-  MyConn(/* args */);
+  MyConn();
+  MyConn(const MyConn&) =delete;
+  MyConn(MyConn&& conn);
   MyConn(SOCKET_FD fd,int port,MyIP* ip);
   ~MyConn();
   friend class MySocket;
+  MyConn& operator = (const MyConn &)=delete;
+  MyConn &operator=(MyConn && conn);
 
   //读取
   int Read(char *buf, size_t len);

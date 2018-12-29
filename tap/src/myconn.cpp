@@ -24,6 +24,45 @@ MyConn::MyConn(SOCKET_FD fd, int port, MyIP *ip)
     *ip_ = *ip;
 }
 
+MyConn::MyConn(MyConn &&conn)
+{
+    ip_ = conn.ip_;
+    conn.ip_ = nullptr;
+    skt_addr_ = conn.skt_addr_;
+    conn.skt_addr_ = nullptr;
+
+    fd_ = conn.fd_;
+#ifdef _WIN32
+    fd_ = INVALID_SOCKET;
+#else
+    fd_ = -1;
+#endif
+    port_ = conn.port_;
+    tp_ = conn.tp_;
+    localport_ = conn.localport_;
+
+    sktaddrlen_ = conn.sktaddrlen_;
+}
+
+MyConn &MyConn::operator=(MyConn &&conn)
+{
+    ip_ = conn.ip_;
+    conn.ip_ = nullptr;
+    skt_addr_ = conn.skt_addr_;
+    conn.skt_addr_ = nullptr;
+
+    fd_ = conn.fd_;
+    conned = conn.conned;
+    conn.conned = false;
+    port_ = conn.port_;
+    tp_ = conn.tp_;
+    localport_ = conn.localport_;
+
+    sktaddrlen_ = conn.sktaddrlen_;
+
+    return *this;
+}
+
 MyConn::~MyConn()
 {
     Close();
@@ -87,13 +126,14 @@ int MyConn::Write(const char *buf, size_t len)
 //关闭
 int MyConn::Close(){
     int r = 0;
+    if(!conned){
+        return r;
+    }
 #ifdef _WIN32
     closesocket(fd_);
 #else
     close(fd_);
 #endif
-    if(r==0){
-        fd_ = -1;
-    }
+    conned = false;
     return r;
 }

@@ -18,7 +18,7 @@ class MyBufConn
 private:
   MySocket *skt_ = nullptr;
   Channel<BinArr> *channel_ = nullptr;
-  MyConn conn_;
+  MyConn* conn_=nullptr;
   /* data */
 public:
     MyBufConn(const MyIP *ip,int port,ConnType tp,size_t bufsize=512);

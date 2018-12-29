@@ -53,7 +53,7 @@ public:
 
 public:
   //打开tap设备,返回0成功
-  int Open(bool zs=true);
+  int Open(bool zs=false);
 
   //关闭tap设备,返回0成功
   int Close();
