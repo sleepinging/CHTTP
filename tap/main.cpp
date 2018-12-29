@@ -11,13 +11,11 @@
 #include "tap-windows.h"
 #endif
 
-
 #include "mytap.h"
 #include "myip.h"
 #include "mymac.h"
 #include "mymask.h"
 #include "mytool.h"
-#include "packet.h"
 #include "mysocket.h"
 #include "netdef.hpp"
 #include "mybufconn.h"
@@ -77,16 +75,6 @@ int testwin(const std::string &strmac, const std::string &strip, int nmask )
         // cout << ++c << " tap read:"<< n << endl;
 
         g_mbc->Write((const char*)buf, n);
-
-        // Packet* p = new Packet();
-        // if(0==p->Parse(buf, n)){
-        //     p->print();
-        // }
-
-        // for (int i = 0; i < n;++i){
-        //     putchar(buf[i]);
-        // }
-        // cout << endl;
     }
 
     //tap.SetDisable();
@@ -127,17 +115,6 @@ int testunix(const std::string &strmac, const std::string &strip, int nmask)
         // cout << ++c << " tap read:"<< n << endl;
 
         g_mbc->Write((const char *)buf, n);
-
-        // Packet *p = new Packet();
-        // if (0 == p->Parse(buf, n))
-        // {
-        //     p->print();
-        // }
-
-        // for (int i = 0; i < n;++i){
-        //     putchar(buf[i]);
-        // }
-        // cout << endl;
     }
     return r;
 }

@@ -2,8 +2,8 @@ targetname=myvpn.exe
 
 OBJS=main.o \
 mytap.o myip.o mymac.o mytool.o mymask.o \
-mystring.o packet.o myconn.o mysocket.o \
-mycrypto.o mybufconn.o
+mystring.o myconn.o mysocket.o mycrypto.o \
+mybufconn.o
 
 GXX=g++
 
