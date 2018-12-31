@@ -21,6 +21,7 @@
 #include "mybufconn.h"
 #include "channel.hpp"
 #include "cmdline.h"
+#include "myipnet.h"
 
 using namespace std;
 
@@ -53,13 +54,9 @@ int th_listen(MyTap* tap){
 }
 
 #ifdef _WIN32
-int testwin(const std::string &strmac, const std::string &strip, int nmask )
+int testwin(const MyMAC &mac, const MyIP &ip, const MyMask &mask)
 {
     int r = 0;
-
-    MyMAC mac(strmac);
-    MyIP ip(strip);
-    MyMask mask(nmask);
 
     auto tap = MyTap::NewTAP(&mac, &ip, &mask);
     thread(th_listen,&tap).detach();
@@ -92,13 +89,9 @@ int testwin(const std::string &strmac, const std::string &strip, int nmask )
     return r;
 }
 #else
-int testunix(const std::string &strmac, const std::string &strip, int nmask)
+int testunix(const MyMAC &mac, const MyIP &ip, const MyMask& mask)
 {
     int r = 0;
-
-    MyMAC mac(strmac);
-    MyIP ip(strip);
-    MyMask mask(nmask);
 
     auto tap = MyTap::NewTAP(&mac, &ip, &mask);
     // auto tap = MyTap::NewTUN(&ip, &mask);
@@ -180,13 +173,21 @@ int connecttest(){
 
 int main(int argc, char const *argv[])
 {
+    MyIPNet in("192.168.8.110/21");
+    auto f = in.Contain(MyIP("192.168.15.127"));
+
     init();
 
     cmdline::parser a;
-    a.add<string>("ip", 'i', "ip string", false, "192.168.10.100");
-    a.add<string>("mac", 'm', "mac string", false, "00:02:03:04:05:07");
-    a.add<int>("mask", 'a', "mask value[0-32]", true, 24);
+    a.add<string>("net", 'n', "ip string", true, "192.168.10.100/24");
+    a.add<string>("mac", 'm', "mac string", true, "00:02:03:04:05:07");
     a.parse_check(argc, argv);
+
+    auto netstr = a.get<string>("net");
+    auto macstr = a.get<string>("mac");
+
+    MyIPNet ipnet(netstr);
+    MyMAC mac(macstr);
 
     // connecttest();
 #ifdef _WIN32

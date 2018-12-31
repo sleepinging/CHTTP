@@ -24,6 +24,7 @@ using DWORD = unsigned long;
 #include "myip.h"
 #include "mymac.h"
 #include "mymask.h"
+#include "myipnet.h"
 
 using namespace std;
 
@@ -252,7 +253,7 @@ const MyMAC *MyTap::GetMAC() const{
 }
 
 //设置IP和掩码
-int MyTap::SetIPMask(MyIP *ip, MyMask *mask)
+int MyTap::SetIPMask(const MyIP *ip,const MyMask *mask)
 {
     *ip_ = *ip;
     *mask_ = *mask;
@@ -265,6 +266,29 @@ int MyTap::SetIPMask(MyIP *ip, MyMask *mask)
     string namecmd = "ip addr add " + ip_->ToString() + "/" + mytrans<int, string>(mask_->value)+" dev "+name_;
     r = ExecCmd({namecmd});
 #endif
+    return r;
+}
+
+//设置IP和掩码,返回0成功
+int MyTap::SetIPMask(const MyIPNet *ipnet){
+    int r = 0;
+    *ip_ = ipnet->GetIP();
+    *mask_ = ipnet->GetMask();
+    r = this->SetIPMask(ip_, mask_);
+    return r;
+}
+
+//设置IP和掩码,返回0成功
+int MyTap::SetIPMask(const std::string &ipnetstr)
+{
+    int r = 0;
+    try
+    {
+        MyIPNet ipnet(ipnetstr);
+        r = this->SetIPMask(&ipnet);
+    }catch(...){
+
+    }
     return r;
 }
 
@@ -419,7 +443,8 @@ size_t MyTap::Write(const char *buf, size_t buflen){
     return r;
 }
 
-MyTap MyTap::NewTAP(MyMAC *mac, MyIP *ip, MyMask *mask){
+MyTap MyTap::NewTAP(const MyMAC *mac, const MyIP *ip, const MyMask *mask)
+{
     MyTap tap;
 #ifdef _WIN32
     if (tap.SetMac(mac) != 0)
@@ -476,7 +501,7 @@ MyTap MyTap::NewTAP(MyMAC *mac, MyIP *ip, MyMask *mask){
     return tap;
 }
 
-MyTap MyTap::NewTUN(MyIP *ip, MyMask *mask)
+MyTap MyTap::NewTUN(const MyIP *ip,const MyMask *mask)
 {
     MyTap tap;
 #ifdef _WIN32

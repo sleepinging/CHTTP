@@ -13,6 +13,7 @@ public:
 public:
   MyMAC(/* args */);
   MyMAC(const std::string &mac);
+  MyMAC(const MyMAC &mac);
   ~MyMAC();
 
   //从字符串解析
@@ -26,6 +27,9 @@ public:
 
   //比较
   bool operator==(const MyMAC &mac) const;
+
+  //赋值
+  MyMAC &operator=(const MyMAC &mac);
 };
 
 #endif // __H__MYMAC__H__

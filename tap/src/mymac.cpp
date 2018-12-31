@@ -17,6 +17,11 @@ MyMAC::MyMAC(const std::string &mac)
     }
 }
 
+MyMAC::MyMAC(const MyMAC &mac)
+{
+    memcpy(this->data, mac.data, 6);
+}
+
 MyMAC::~MyMAC()
 {
 }
@@ -75,4 +80,11 @@ std::string MyMAC::ToUp(const char chsp) const
 bool MyMAC::operator==(const MyMAC &mac) const
 {
     return memcmp(this->data, mac.data, 6) == 0;
+}
+
+//赋值
+MyMAC &MyMAC::operator=(const MyMAC &mac)
+{
+    memcpy(this->data, mac.data, 6);
+    return *this;
 }

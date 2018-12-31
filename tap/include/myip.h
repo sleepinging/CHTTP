@@ -18,6 +18,9 @@ public:
   //复制
   MyIP(const MyIP &ip);
 
+  //复制
+  MyIP(MyIP &&ip);
+
   //从字符串解析
   int Parse(const std::string &ip);
 
@@ -26,6 +29,9 @@ public:
 
   //比较
   bool operator==(const MyIP &ip) const;
+
+  //赋值
+  MyIP &operator=(const MyIP &ip);
 
 };
 

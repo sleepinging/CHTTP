@@ -20,13 +20,13 @@ public:
   ~MyMask();
 
   //转为4字节格式的IPv4掩码,如255.255.248.0
-  void ToIPv4Mask(unsigned char ipmask[4]);
+  void ToIPv4Mask(unsigned char ipmask[4]) const;
 
   //获取网络地址,如192.168.9.138/21->192.168.8.0
-  void ToNetIPv4(MyIP* ip,MyIP* net);
+  void ToNetIPv4(const MyIP *ip, MyIP *net) const;
 
   //转字符串
-  std::string ToString();
+  std::string ToString() const;
 };
 
 #endif // __H__MYMASK__H__

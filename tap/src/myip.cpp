@@ -23,6 +23,11 @@ MyIP::MyIP(const MyIP &ip)
     memcpy(this->data, ip.data, 4);
 }
 
+//复制
+MyIP::MyIP(MyIP &&ip){
+    memcpy(this->data, ip.data, 4);
+}
+
 MyIP::MyIP(const std::string &ip)
 {
     if(Parse(ip)==-1){
@@ -66,4 +71,11 @@ std::string MyIP::ToString() const{
 bool MyIP::operator==(const MyIP &ip) const
 {
     return memcmp(this->data, ip.data, 4) == 0;
+}
+
+//赋值
+MyIP &MyIP::operator=(const MyIP &ip)
+{
+    memcpy(this->data, ip.data, 4);
+    return *this;
 }

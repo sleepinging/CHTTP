@@ -20,6 +20,8 @@ class MyMAC;
 
 class MyMask;
 
+class MyIPNet;
+
 class MyTap
 {
 private:
@@ -71,7 +73,13 @@ public:
   const MyMAC *GetMAC() const;
 
   //设置IP和掩码,返回0成功
-  int SetIPMask(MyIP *ip,MyMask* mask);
+  int SetIPMask(const MyIP *ip,const MyMask* mask);
+
+  //设置IP和掩码,返回0成功
+  int SetIPMask(const MyIPNet *ipnet);
+
+  //设置IP和掩码,返回0成功
+  int SetIPMask(const std::string &ipnetstr);
 
   //获取IP
   const MyIP *GetIP() const;
@@ -98,8 +106,8 @@ private:
   int opentun(bool zs = true);
 
 public:
-  static MyTap NewTAP(MyMAC *mac, MyIP* ip,MyMask* mask);
-  static MyTap NewTUN(MyIP *ip, MyMask *mask);
+  static MyTap NewTAP(const MyMAC *mac, const MyIP *ip, const MyMask *mask);
+  static MyTap NewTUN(const MyIP *ip, const MyMask *mask);
 };
 
 #endif // __H__MYTAP__H__

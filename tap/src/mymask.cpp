@@ -20,7 +20,7 @@ MyMask::~MyMask()
 }
 
 //转为4字节格式的IPv4掩码
-void MyMask::ToIPv4Mask(unsigned char ipmask[4])
+void MyMask::ToIPv4Mask(unsigned char ipmask[4]) const
 {
     uint32_t b=0xffffffff;
     b <<= (32 - value);
@@ -31,7 +31,7 @@ void MyMask::ToIPv4Mask(unsigned char ipmask[4])
 }
 
 //获取网络地址,如192.168.9.138/21->192.168.8.0
-void MyMask::ToNetIPv4(MyIP *ip, MyIP *net)
+void MyMask::ToNetIPv4(const MyIP *ip, MyIP *net) const
 {
     uint32_t b = 0xffffffff;
     b <<= (32 - value);
@@ -52,7 +52,7 @@ void MyMask::ToNetIPv4(MyIP *ip, MyIP *net)
 }
 
 //转字符串
-std::string MyMask::ToString()
+std::string MyMask::ToString() const
 {
     MyIP ip;
     this->ToIPv4Mask(ip.data);
