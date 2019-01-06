@@ -188,3 +188,15 @@ std::string fmttime(time_t t, const std::string &fstr)
     return string(buf);
 }
 }
+
+void showerr(const char *msg)
+{
+#ifdef _WIN32
+    char error[1000];
+    sprintf(error, "%s %lu", msg, GetLastError());
+    MessageBoxA(0, error, "error", 0);
+#else
+    // cout << "error:"<<msg << endl;
+    perror(msg);
+#endif
+}

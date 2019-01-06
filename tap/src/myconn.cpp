@@ -6,7 +6,13 @@
 #include <unistd.h>
 #endif
 
+#include <iostream>
+#include <thread>
+
 #include "myip.h"
+#include "mysocket.h"
+
+using namespace std;
 
 MyConn::MyConn(/* args */)
 {
@@ -120,6 +126,28 @@ int MyConn::Write(const char *buf, size_t len)
     // case ConnType::UDP:
     //     r = sendto(fd_, buf, len, 0, skt_addr_, sktaddrlen_);
     // }
+    return r;
+}
+
+/**
+   * @description: 重连
+   * @param 最大次数，-1无限制
+   * @return: 
+   */
+int MyConn::ReConnect(int max)
+{
+    int r = 0;
+    while (max-- != 0)
+    {
+        try{
+            *this = MySocket::Connect(ip_, port_, tp_);
+            break;
+        }
+        catch (...)
+        {
+            this_thread::sleep_for(chrono::seconds(1));
+        }
+    }
     return r;
 }
 

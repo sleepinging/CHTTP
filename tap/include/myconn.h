@@ -29,6 +29,7 @@ private:
   sockaddr* skt_addr_ = nullptr;
   int sktaddrlen_ = 0;
 
+public:
   //IP,端口和类型缓存
   int port_;
   MyIP *ip_ = nullptr;
@@ -56,6 +57,13 @@ public:
 
   //设置发送超时
   int SetSendTimeOut(const int timeout);
+
+  /**
+   * @description: 重连
+   * @param 最大次数，-1无限制
+   * @return: 
+   */
+  int ReConnect(int max=-1);
 
   //设置接收超时
   int SetRecvTimeOut(const int timeout);

@@ -59,7 +59,7 @@ int MyBufConn::Read(char *buf, size_t len){
 
 //写入
 int MyBufConn::Write(const char *buf, size_t len){
-    int r = 0;
+    int r = len;
     if(len==0){
         return r;
     }

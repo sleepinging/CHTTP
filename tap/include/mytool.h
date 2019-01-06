@@ -30,6 +30,8 @@ namespace MyTime{
 std::string fmttime(time_t t, const std::string &fstr = "%Y-%m-%d %H:%M:%S");
 }
 
+void showerr(const char *msg = "");
+
 namespace BigEndian{
     template<typename T>
     T Read(const unsigned char* buf){

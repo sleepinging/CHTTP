@@ -102,7 +102,7 @@ MyConn MySocket::Connect(const MyIP *remoteip, int remoteport, ConnType type, in
     // }
     if (connect(fd, (sockaddr *)&server, sizeof(server)) == SOCKET_ERROR)
     {
-        cout << "connect failed" << endl;
+        cout << "connect socket failed" << endl;
         throw "connect socket failed";
         return mc;
     }

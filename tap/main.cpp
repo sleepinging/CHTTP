@@ -22,19 +22,9 @@
 #include "channel.hpp"
 #include "cmdline.h"
 #include "myipnet.h"
+#include "test.h"
 
 using namespace std;
-
-void showerr(const char* msg=""){
-#ifdef _WIN32
-    char error[1000];
-    sprintf(error, "%s %lu",msg, GetLastError());
-    MessageBoxA(0, error, "error", 0);
-#else
-    // cout << "error:"<<msg << endl;
-    perror(msg);
-#endif
-}
 
 static MyBufConn* g_mbc = nullptr;
 
@@ -134,45 +124,12 @@ int cleanup(){
     return r;
 }
 
-int connecttest(){
-    MySocket ms;
-    MyIP ip("192.168.1.100");
-    auto cn = ms.Connect(&ip, 8875, ConnType::TCP);
-    // auto cn = ms.Connect(&ip, 8876, ConnType::TCP,12346);
-    int r = cn.Write("123", 3);
-    r = cn.Write("456", 3);
-    r = cn.Write("798", 3);
-    if(r<0){
-        showerr("write");
-    }
-    char buf[2048]={0};
-    while(1){
-        r = cn.Read(buf, 2047);
-        cout << string(buf, r) << endl;
-    }
-    
-
-    // MyIP ip("192.168.1.100");
-    // MyBufConn bc(&ip, 8765, ConnType::TCP);
-    // int r = bc.Write("123", 3);
-    // r = bc.Write("456", 3);
-    // r = bc.Write("798", 3);
-
-    // char buf[2048]={0};
-    // r = bc.Read(buf, 2047);
-    // cout << string(buf, r) << endl;
-
-    // if (r < 0)
-    // {
-    //     showerr("write");
-    // }
-
-    // this_thread::sleep_for(chrono::seconds(1));
-    return r;
-}
-
 int main(int argc, char const *argv[])
 {
+    int r = 0;
+    r=test(argc, argv);
+    return r;
+
     init();
 
     cmdline::parser a;
@@ -186,7 +143,6 @@ int main(int argc, char const *argv[])
     MyIPNet ipnet(netstr);
     MyMAC mac(macstr);
 
-    // connecttest();
 #ifdef _WIN32
     testwin(a.get<string>("mac"), a.get<string>("ip"), a.get<int>("mask"));
 #else
