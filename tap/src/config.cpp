@@ -73,7 +73,24 @@ bool Config::handleline(const std::string &line){
     //     ListenPort = mytrans<string, int>(std::move(value));
     //     return true;
     // }
-    
+    if(key=="serverip"){
+        ServerIP = std::move(value);
+        return true;
+    }
+    if(key=="serverport"){
+        ServerPort = mytrans<string, int>(std::move(value));
+        return true;
+    }
+    if (key == "mac")
+    {
+        MAC = std::move(value);
+        return true;
+    }
+    if (key == "ipnet")
+    {
+        IPNET = std::move(value);
+        return true;
+    }
 
     else if (key == "end")
     {
@@ -90,12 +107,30 @@ bool Config::check()
 {
     // if(deviceId==""){
     //     cout << "deviceid can't small than 0" << endl;
+    //     return false;
     // }
     // if (ListenPort<=0){
     //     cout << "port can't small than 0" << endl;
     //     return false;
     // }
-    
+    if(ServerIP==""){
+        cout << "serverip can not empty" << endl;
+        return false;
+    }
+    if (ServerPort<=0){
+        cout << "serverport can't small than 0" << endl;
+        return false;
+    }
+    if(MAC==""){
+        cout << "mac can not empty" << endl;
+        return false;
+    }
+    if (IPNET == "")
+    {
+        cout << "ipnet can not empty" << endl;
+        return false;
+    }
+
     return true;
 }
 

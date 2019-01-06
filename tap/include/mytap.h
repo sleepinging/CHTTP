@@ -50,8 +50,10 @@ private:
 public:
   MyTap(/* args */);
   ~MyTap();
-  MyTap(const MyTap &tap);
+  MyTap(const MyTap &tap)=delete;
   MyTap(MyTap &&tap);
+  MyTap &operator=(MyTap &&tap);
+  MyTap &operator=(const MyTap &tap)=delete;
 
 public:
   //打开tap设备,返回0成功
@@ -107,7 +109,9 @@ private:
 
 public:
   static MyTap NewTAP(const MyMAC *mac, const MyIP *ip, const MyMask *mask);
+  static MyTap NewTAP(const MyMAC *mac, const MyIPNet *ipnet);
   static MyTap NewTUN(const MyIP *ip, const MyMask *mask);
+  static MyTap NewTUN(const MyIPNet *ipnet);
 };
 
 #endif // __H__MYTAP__H__

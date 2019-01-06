@@ -3,7 +3,7 @@
  * @Author: taowentao
  * @Date: 2019-01-06 11:43:48
  * @LastEditors: taowentao
- * @LastEditTime: 2019-01-06 12:36:02
+ * @LastEditTime: 2019-01-06 14:47:14
  */
 
 #include "test.h"
@@ -45,6 +45,25 @@ int test(int argc, char const *argv[]){
 }
 
 /**
+ * @description: 测试命令行
+ * @param {type} 
+ * @return: 
+ */
+int test_cmd(int argc, char const *argv[]){
+    int r = 0;
+
+    cmdline::parser a;
+    a.add<string>("net", 'n', "ip string", true, "192.168.10.100/24");
+    a.add<string>("mac", 'm', "mac string", true, "00:02:03:04:05:07");
+    a.parse_check(argc, argv);
+
+    // auto netstr = a.get<string>("net");
+    // auto macstr = a.get<string>("mac");
+
+    return r;
+}
+
+/**
  * @description: 测试重连
  * @param {type} 
  * @return: 
@@ -59,22 +78,17 @@ int test_reconnect(){
     char buf[2048] = {0};
     while (1)
     {
-        try{
-            r = cn.Write("123", 3);
-            if (r <= 0)
-            {
-                cn.ReConnect();
-            }
-            r = cn.Read(buf, 2047);
-            if (r <= 0)
-            {
-                cn.ReConnect();
-            }else{
-                cout << string(buf, r) << endl;
-            }
-        }catch(const char* msg){
-            cout << msg << endl;
-            this_thread::sleep_for(chrono::seconds(1));
+        r = cn.Write("123", 3);
+        if (r <= 0)
+        {
+            cn.ReConnect();
+        }
+        r = cn.Read(buf, 2047);
+        if (r <= 0)
+        {
+            cn.ReConnect();
+        }else{
+            cout << string(buf, r) << endl;
         }
     }
 
@@ -127,3 +141,40 @@ int test_connect(){
     // this_thread::sleep_for(chrono::seconds(1));
     return r;
 }
+
+/**
+ * @description: 测试tap
+ * @param {type} 
+ * @return: 
+ */
+int test_tap(const MyMAC *mac, const MyIPNet *ipnet){
+    int r = 0;
+#ifdef _WIN32
+    r = test_tap_win(mac, ipnet);
+#else
+    r = test_tap_linux(mac, ipnet);
+#endif
+    return r;
+}
+
+#ifdef _WIN32
+/**
+ * @description: 测试win tap
+ * @param {type} 
+ * @return: 
+ */
+int test_tap_win(const MyMAC *mac, const MyIPNet *ipnet){
+    int r = 0;
+    return r;
+}
+#else
+/**
+ * @description: 测试linux tap
+ * @param {type} 
+ * @return: 
+ */
+int test_tap_linux(const MyMAC *mac, const MyIPNet *ipnet){
+    int r = 0;
+    return r;
+}
+#endif

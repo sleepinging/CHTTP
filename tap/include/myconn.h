@@ -3,6 +3,8 @@
 #if !defined(__H__MYCONN__H__)
 #define __H__MYCONN__H__
 
+#include <mutex>
+
 #ifdef _WIN32
     #include <WinSock2.h>
     #include <Windows.h>
@@ -38,6 +40,15 @@ public:
   int localport_;
 
   bool conned = false;
+
+  //1表示正在重连
+  int status_ = 0;
+
+  std::mutex mtx_;
+
+private:
+  int getstatus();
+  int setstatus(int status);
 
 public:
   MyConn();

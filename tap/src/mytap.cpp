@@ -63,18 +63,18 @@ MyTap::~MyTap()
 #endif
 }
 
-MyTap::MyTap(const MyTap &tap)
-{
-    *mac_ = *tap.mac_;
-    *ip_ = *tap.ip_;
-    *mask_ = *tap.mask_;
-    mtu_ = tap.mtu_;
-    id_ = tap.id_;
-    name_ = tap.name_;
-    dname_ = tap.dname_;
-    hd_ = tap.hd_;
-    zs_ = tap.zs_;
-}
+// MyTap::MyTap(const MyTap &tap)
+// {
+//     *mac_ = *tap.mac_;
+//     *ip_ = *tap.ip_;
+//     *mask_ = *tap.mask_;
+//     mtu_ = tap.mtu_;
+//     id_ = tap.id_;
+//     name_ = tap.name_;
+//     dname_ = tap.dname_;
+//     hd_ = tap.hd_;
+//     zs_ = tap.zs_;
+// }
 
 MyTap::MyTap(MyTap &&tap)
 {
@@ -92,6 +92,26 @@ MyTap::MyTap(MyTap &&tap)
     mtu_ = tap.mtu_;
     hd_ = tap.hd_;
     zs_ = tap.zs_;
+}
+
+MyTap &MyTap::operator=(MyTap &&tap)
+{
+    mac_ = tap.mac_;
+    tap.mac_ = nullptr;
+    ip_ = tap.ip_;
+    tap.ip_ = nullptr;
+    mask_ = tap.mask_;
+    tap.mask_ = nullptr;
+
+    id_ = std::move(tap.id_);
+    name_ = std::move(tap.name_);
+    dname_ = std::move(tap.dname_);
+
+    mtu_ = tap.mtu_;
+    hd_ = tap.hd_;
+    zs_ = tap.zs_;
+
+    return *this;
 }
 
 //打开tap设备
@@ -421,6 +441,9 @@ size_t MyTap::Read(char *buf, size_t buflen){
 //写入
 size_t MyTap::Write(const char *buf, size_t buflen){
     size_t r = 0;
+    if(buflen==0){
+        return r;
+    }
 #ifdef _WIN32
     DWORD wd = 0;
     if (zs_)
@@ -501,6 +524,13 @@ MyTap MyTap::NewTAP(const MyMAC *mac, const MyIP *ip, const MyMask *mask)
     return tap;
 }
 
+MyTap MyTap::NewTAP(const MyMAC *mac, const MyIPNet *ipnet)
+{
+    const MyIP &ip = ipnet->GetIP();
+    const MyMask &mask = ipnet->GetMask();
+    return NewTAP(mac, &ip,&mask);
+}
+
 MyTap MyTap::NewTUN(const MyIP *ip,const MyMask *mask)
 {
     MyTap tap;
@@ -548,4 +578,11 @@ MyTap MyTap::NewTUN(const MyIP *ip,const MyMask *mask)
     tap.SetEnable();
 #endif
     return tap;
+}
+
+MyTap MyTap::NewTUN(const MyIPNet *ipnet)
+{
+    const MyIP &ip = ipnet->GetIP();
+    const MyMask &mask = ipnet->GetMask();
+    return NewTUN(&ip, &mask);
 }

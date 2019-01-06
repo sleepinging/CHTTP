@@ -39,7 +39,13 @@ class Config
     std::string ServerIP = "123.207.91.166";
 
     //服务器端口
-    int port=6543;
+    int ServerPort = 6543;
+
+    //MAC
+    std::string MAC;
+
+    //IPNET
+    std::string IPNET;
 
     //其它配置项,key都会变成小写
     std::unordered_map<std::string, std::string> kvmap;

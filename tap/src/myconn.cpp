@@ -137,18 +137,38 @@ int MyConn::Write(const char *buf, size_t len)
 int MyConn::ReConnect(int max)
 {
     int r = 0;
+    if(getstatus()==2){//正在重连
+        return r;
+    }
+    setstatus(2);
     while (max-- != 0)
     {
         try{
             *this = MySocket::Connect(ip_, port_, tp_);
+            cout << "reconnect success" << endl;
             break;
         }
         catch (...)
         {
+            cout << "reconnect failed,retry..." << endl;
             this_thread::sleep_for(chrono::seconds(1));
         }
     }
+    setstatus(0);
     return r;
+}
+
+int MyConn::getstatus()
+{
+    std::unique_lock<std::mutex> lk(mtx_);
+    return status_;
+}
+
+int MyConn::setstatus(int status)
+{
+    std::unique_lock<std::mutex> lk(mtx_);
+    status_ = status;
+    return status_;
 }
 
 //关闭

@@ -171,7 +171,11 @@ int ExecCmd(std::initializer_list<std::string> cmds, bool show)
     }
     cmd +=*(cmds.end() - 1);
     if(!show){
+#ifdef _WIN32
         cmd += " > NUL";
+#else
+        cmd += " > /dev/null";
+#endif
     }else{
         cout << cmd << endl;
     }
