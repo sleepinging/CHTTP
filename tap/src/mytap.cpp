@@ -25,6 +25,7 @@ using DWORD = unsigned long;
 #include "mymac.h"
 #include "mymask.h"
 #include "myipnet.h"
+#include "config.h"
 
 using namespace std;
 
@@ -36,12 +37,16 @@ MyTap::MyTap(/* args */)
 
 #ifdef _WIN32
     id_ = GetTAPComponentId();
+    if(id_==""){
+        cout << "get adapter id failed!" << endl;
+        throw "get adapter id failed!";
+    }
     dname_ = USERMODEDEVICEDIR + id_ + TAP_WIN_SUFFIX;
     name_ = GetRegValue(NETWORK_CONNECTIONS_KEY + ("\\"+id_) + "\\Connection", "Name");
     if (name_ == "")
     {
-        cout << "get adapter nama failed!" << endl;
-        throw "get adapter nama failed!";
+        cout << "get adapter name failed!" << endl;
+        throw "get adapter name failed!";
     }
     // //最好先使用netsh interface show interface [名字]
     // //判断状态，直接设置启用也可以
@@ -134,7 +139,9 @@ int MyTap::Open(bool zs)
 #else
     struct ifreq ifr;
     int fd, err;
-    const char *clonedev = "/dev/net/tun";
+
+    auto cfg = Config::GetInstance();
+    const char *clonedev = cfg->LinuxTUNPath.c_str();
 
     // IFF_TUN:
     //     创建一个点对点设备

@@ -91,6 +91,11 @@ bool Config::handleline(const std::string &line){
         IPNET = std::move(value);
         return true;
     }
+    if (key == "linuxtunpath")
+    {
+        LinuxTUNPath = std::move(value);
+        return true;
+    }
 
     else if (key == "end")
     {
@@ -128,6 +133,11 @@ bool Config::check()
     if (IPNET == "")
     {
         cout << "ipnet can not empty" << endl;
+        return false;
+    }
+    if (LinuxTUNPath == "")
+    {
+        cout << "LinuxTUNPath can not empty" << endl;
         return false;
     }
 

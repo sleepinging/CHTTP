@@ -47,6 +47,9 @@ class Config
     //IPNET
     std::string IPNET;
 
+    //linux tun设备位置
+    std::string LinuxTUNPath = "/dev/net/tun";
+
     //其它配置项,key都会变成小写
     std::unordered_map<std::string, std::string> kvmap;
 
