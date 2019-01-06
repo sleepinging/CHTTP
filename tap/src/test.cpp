@@ -3,7 +3,7 @@
  * @Author: taowentao
  * @Date: 2019-01-06 11:43:48
  * @LastEditors: taowentao
- * @LastEditTime: 2019-01-06 14:47:14
+ * @LastEditTime: 2019-01-06 15:59:44
  */
 
 #include "test.h"
@@ -165,6 +165,9 @@ int test_tap(const MyMAC *mac, const MyIPNet *ipnet){
  */
 int test_tap_win(const MyMAC *mac, const MyIPNet *ipnet){
     int r = 0;
+    //去除警告
+    r = mac->data[0];
+    r = ipnet->GetIP().data[0];
     return r;
 }
 #else
@@ -175,6 +178,9 @@ int test_tap_win(const MyMAC *mac, const MyIPNet *ipnet){
  */
 int test_tap_linux(const MyMAC *mac, const MyIPNet *ipnet){
     int r = 0;
+    //去除警告
+    r = mac->data[0];
+    r = ipnet->GetIP().data[0];
     return r;
 }
 #endif

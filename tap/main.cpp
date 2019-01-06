@@ -30,6 +30,33 @@ using namespace std;
 
 static MyBufConn* g_mbc = nullptr;
 
+/**
+ * @description: 处理从服务器接收到的数据,解压|解密
+ * @param 
+ *  data:数据
+ *  len:数据长度
+ *  bs:处理之后的数据
+ * @return: 返回小于0表示无效数据
+ */
+int handle_data_recv_remote(const char* data,size_t len,BinArr& bs){
+    bs = {data, data + len};
+    return bs.size();
+}
+
+/**
+ * @description: 处理从tap设备读取的数据,加密|压缩
+ * @param 
+ *  data:数据
+ *  len:数据长度
+ *  bs:处理之后的数据
+ * @return: 返回小于0表示无效数据
+ */
+int handle_data_recv_tap(const char *data, size_t len, BinArr &bs)
+{
+    bs = {data, data + len};
+    return bs.size();
+}
+
 int th_listen(MyTap* tap){
     static char buf[2048] = {0};
     int r = 0;
@@ -39,10 +66,14 @@ int th_listen(MyTap* tap){
         if(r<=0){
             continue;
         }
-        buf[r] = 0;
-        cout<<"socket read:"<<r<<endl;
+        // buf[r] = 0;
+        // cout<<"socket read:"<<r<<endl;
         // cout<<"socket read:"<<r<<" wait for write tap ..." <<endl;
-        r=tap->Write(buf, r);
+        BinArr bs;
+        if(handle_data_recv_remote(buf, r, bs)<0){
+            continue;
+        }
+        r = tap->Write((const char*)&bs[0], bs.size());
         // cout << "tap writed "<<r << endl;
     }
 
@@ -61,16 +92,21 @@ int testwin(const MyMAC *mac, const MyIPNet* ipnet)
     int n = 0;
     // //TUN至少写入20字节,TAP至少写入14字节
     // n = tap.Write("12345678901234567890", 14);
-    unsigned char buf[2048 + 14] = {0};
+    char buf[2048 + 14] = {0};
 
-    while((n = tap.Read((char*)buf, 2048))>=0){
+    while((n = tap.Read(buf, 2048))>=0){
         // static int c = 0;
         // cout << ++c << " tap read:"<< n << endl;
         if(n<=0){
             continue;
         }
 
-        g_mbc->Write((const char*)buf, n);
+        BinArr bs;
+        if(handle_data_recv_tap(buf, n, bs)<0){
+            continue;
+        }
+
+        g_mbc->Write((const char*)&bs[0], bs.size());
     }
 
     //tap.SetDisable();

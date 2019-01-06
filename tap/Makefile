@@ -1,10 +1,28 @@
 targetname=myvpn.exe
 
-OBJS=main.o \
-mytap.o myip.o mymac.o mytool.o mymask.o \
-mystring.o myconn.o mysocket.o mycrypto.o \
-mybufconn.o myipnet.o config.o tfile.o \
-test.o
+OBJPATH=obj
+
+# OBJS=main.o \
+# mytap.o myip.o mymac.o mytool.o mymask.o \
+# mystring.o myconn.o mysocket.o mycrypto.o \
+# mybufconn.o myipnet.o config.o tfile.o \
+# test.o
+
+OBJS += $(OBJPATH)/main.o
+OBJS += $(OBJPATH)/mytap.o
+OBJS += $(OBJPATH)/myip.o
+OBJS += $(OBJPATH)/mymac.o
+OBJS += $(OBJPATH)/mytool.o
+OBJS += $(OBJPATH)/mymask.o
+OBJS += $(OBJPATH)/mystring.o
+OBJS += $(OBJPATH)/myconn.o
+OBJS += $(OBJPATH)/mysocket.o
+OBJS += $(OBJPATH)/mycrypto.o
+OBJS += $(OBJPATH)/mybufconn.o
+OBJS += $(OBJPATH)/myipnet.o
+OBJS += $(OBJPATH)/config.o
+OBJS += $(OBJPATH)/tfile.o
+OBJS += $(OBJPATH)/test.o
 
 GXX=g++
 
@@ -21,37 +39,37 @@ BUILD_FLAG=-g -Wall -Wextra -std=c++11 #-static
 
 main:$(OBJS)
 	$(GXX) $^ $(LD_FLAGS) -o $(targetname)
-main.o:main.cpp
-	$(GXX) -c $^ -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-mytap.o:src/mytap.cpp include/mytap.h
+$(OBJPATH)/main.o:main.cpp
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-myip.o:src/myip.cpp include/myip.h
+$(OBJPATH)/mytap.o:src/mytap.cpp include/mytap.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-mymac.o:src/mymac.cpp include/mymac.h
+$(OBJPATH)/myip.o:src/myip.cpp include/myip.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-mytool.o:src/mytool.cpp include/mytool.h
+$(OBJPATH)/mymac.o:src/mymac.cpp include/mymac.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-mymask.o:src/mymask.cpp include/mymask.h
+$(OBJPATH)/mytool.o:src/mytool.cpp include/mytool.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-mystring.o:src/mystring.cpp include/mystring.h
+$(OBJPATH)/mymask.o:src/mymask.cpp include/mymask.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-packet.o:src/packet.cpp include/packet.h
+$(OBJPATH)/mystring.o:src/mystring.cpp include/mystring.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-myconn.o:src/myconn.cpp include/myconn.h
+$(OBJPATH)/packet.o:src/packet.cpp include/packet.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-mysocket.o:src/mysocket.cpp include/mysocket.h
+$(OBJPATH)/myconn.o:src/myconn.cpp include/myconn.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-mycrypto.o:src/mycrypto.cpp include/mycrypto.h
+$(OBJPATH)/mysocket.o:src/mysocket.cpp include/mysocket.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-mybufconn.o:src/mybufconn.cpp include/mybufconn.h
+$(OBJPATH)/mycrypto.o:src/mycrypto.cpp include/mycrypto.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-myipnet.o:src/myipnet.cpp include/myipnet.h
+$(OBJPATH)/mybufconn.o:src/mybufconn.cpp include/mybufconn.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-config.o:src/config.cpp include/config.h
+$(OBJPATH)/myipnet.o:src/myipnet.cpp include/myipnet.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-tfile.o:src/tfile.cpp include/tfile.h
+$(OBJPATH)/config.o:src/config.cpp include/config.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-test.o:src/test.cpp include/test.h
+$(OBJPATH)/tfile.o:src/tfile.cpp include/tfile.h
+	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
+$(OBJPATH)/test.o:src/test.cpp include/test.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
 	
 clean:
