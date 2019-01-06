@@ -173,9 +173,6 @@ int connecttest(){
 
 int main(int argc, char const *argv[])
 {
-    MyIPNet in("192.168.8.110/21");
-    auto f = in.Contain(MyIP("192.168.15.127"));
-
     init();
 
     cmdline::parser a;

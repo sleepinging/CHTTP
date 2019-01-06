@@ -3,7 +3,8 @@ targetname=myvpn.exe
 OBJS=main.o \
 mytap.o myip.o mymac.o mytool.o mymask.o \
 mystring.o myconn.o mysocket.o mycrypto.o \
-mybufconn.o myipnet.o
+mybufconn.o myipnet.o config.o tfile.o \
+test.o
 
 GXX=g++
 
@@ -46,6 +47,12 @@ mybufconn.o:src/mybufconn.cpp include/mybufconn.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
 myipnet.o:src/myipnet.cpp include/myipnet.h
 	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
-
+config.o:src/config.cpp include/config.h
+	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
+tfile.o:src/tfile.cpp include/tfile.h
+	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
+test.o:src/test.cpp include/test.h
+	$(GXX) -c $< -I$(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
+	
 clean:
 	del $(OBJS) $(targetname)
