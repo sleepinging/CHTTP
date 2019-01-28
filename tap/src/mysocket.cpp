@@ -81,7 +81,7 @@ MyConn MySocket::Connect(const MyIP *remoteip, int remoteport, ConnType type, in
 
         //----------------------
         // Bind the socket.
-        if (bind(fd, (sockaddr *)&service, sizeof(service)) == SOCKET_ERROR)
+        if (::bind(fd, (sockaddr *)&service, sizeof(service)) == SOCKET_ERROR)
         {
             cout << "bind port:" << localport << endl;
             perror("bind failed");

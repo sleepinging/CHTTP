@@ -32,8 +32,11 @@ MyConn::MyConn(SOCKET_FD fd, int port, MyIP *ip)
 
 MyConn::MyConn(MyConn &&conn)
 {
+    delete ip_;
     ip_ = conn.ip_;
     conn.ip_ = nullptr;
+
+    delete skt_addr_;
     skt_addr_ = conn.skt_addr_;
     conn.skt_addr_ = nullptr;
 
@@ -52,8 +55,11 @@ MyConn::MyConn(MyConn &&conn)
 
 MyConn &MyConn::operator=(MyConn &&conn)
 {
+    delete ip_;
     ip_ = conn.ip_;
     conn.ip_ = nullptr;
+
+    delete skt_addr_;
     skt_addr_ = conn.skt_addr_;
     conn.skt_addr_ = nullptr;
 

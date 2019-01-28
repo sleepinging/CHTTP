@@ -170,13 +170,23 @@ int init(int argc, char const *argv[])
 
     auto cfg = Config::GetInstance();
     const auto &sip = cfg->ServerIP;
-    auto port = cfg->ServerPort;
+    auto port = cfg->DataPort;
 
     MyIP ip(sip);
-    try{
-        g_mbc = new MyBufConn(&ip, port, ConnType::TCP);
-    }catch(...){
-        r = -1;
+    while(1){//直到连接成功
+        cout << "connect to server " << ip.ToString() << flush;
+        try
+        {
+            g_mbc = new MyBufConn(&ip, port, ConnType::TCP);
+            cout << " success" << endl;
+            break;
+        }
+        catch (...)
+        {
+            r = -1;
+            cout <<" failed,retry after 10 second..." << endl;
+            this_thread::sleep_for(chrono::seconds(10));
+        }
     }
 
     return r;
@@ -193,8 +203,11 @@ int cleanup(){
 int main(int argc, char const *argv[])
 {
     int r = 0;
-    // r=test(argc, argv);
-    // return r;
+
+    r=test(argc, argv);
+    if(r!=0){
+        return r;
+    }
 
     r=init(argc, argv);
     if(r<0){

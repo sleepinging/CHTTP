@@ -1,26 +1,28 @@
 #ifndef _H_WaitGroup_H_
 #define _H_WaitGroup_H_
+
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 
 //暂时先这么写吧
 class WaitGroup{
 public:
     //添加n个任务
-    void add(int n){
+    void Add(int n){
         //使用RAII的锁
         std::unique_lock<std::mutex> lk(nmtx);
         num_+=n;
     }
 
     //添加一个任务
-    void add(){add(1);}
+    void Add(){Add(1);}
 
     //完成一个任务
-    void down(){down(1);}
+    void Down(){Down(1);}
 
     //完成n个任务
-    void down(int n){
+    void Down(int n){
         //如果都已经完成了就返回
         if(num_<=0)return;
         //上锁
@@ -36,7 +38,7 @@ public:
     }
 
     //等待任务完成
-    void wait(){
+    void Wait(){
         if(num_<=0)return;
         std::unique_lock<std::mutex> lk(cmtx);
         //等待任务完成

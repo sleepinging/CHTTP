@@ -155,7 +155,7 @@ int MyTap::Open(bool zs)
 
     if ((fd = open(clonedev, O_RDWR)) < 0)
     {
-        perror("open failed");
+        perror("open clonedev failed");
         return fd;
     }
 

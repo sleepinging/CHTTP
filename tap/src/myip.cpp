@@ -62,7 +62,7 @@ int MyIP::Parse(const std::string &ip){
 
 //转为字符串
 std::string MyIP::ToString() const{
-    char buf[15] = {0};
+    char buf[16] = {0};
     sprintf(buf, "%d.%d.%d.%d", data[0], data[1], data[2], data[3]);
     return buf;
 }

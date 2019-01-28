@@ -38,8 +38,11 @@ class Config
     //服务器IP
     std::string ServerIP = "123.207.91.166";
 
-    //服务器端口
-    int ServerPort = 6543;
+    //数据端口
+    int DataPort = 6543;
+
+    //控制端口
+    int CTLPort = 6544;
 
     //MAC
     std::string MAC;

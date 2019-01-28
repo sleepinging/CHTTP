@@ -77,8 +77,13 @@ bool Config::handleline(const std::string &line){
         ServerIP = std::move(value);
         return true;
     }
-    if(key=="serverport"){
-        ServerPort = mytrans<string, int>(std::move(value));
+    if(key=="dataport"){
+        DataPort = mytrans<string, int>(std::move(value));
+        return true;
+    }
+    if (key == "ctlport")
+    {
+        CTLPort = mytrans<string, int>(std::move(value));
         return true;
     }
     if (key == "mac")
@@ -122,8 +127,13 @@ bool Config::check()
         cout << "serverip can not empty" << endl;
         return false;
     }
-    if (ServerPort<=0){
-        cout << "serverport can't small than 0" << endl;
+    if (DataPort<=0){
+        cout << "DataPort can't small than 0" << endl;
+        return false;
+    }
+    if (CTLPort <= 0)
+    {
+        cout << "CTLPort can't small than 0" << endl;
         return false;
     }
     if(MAC==""){
