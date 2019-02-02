@@ -3,7 +3,7 @@
  * @Author: taowentao
  * @Date: 2019-01-06 11:43:48
  * @LastEditors: taowentao
- * @LastEditTime: 2019-01-28 13:46:41
+ * @LastEditTime: 2019-02-02 20:18:56
  */
 
 #include "test.h"
@@ -33,12 +33,18 @@ using namespace std;
 //测试压缩
 int test_comp(){
     MyCompress::Init();
-    const char str[] = "999";
+    const char str[] = "hello";
     const char unsigned *data = (const char unsigned *)str;
     const uint64_t inlen = sizeof(str);
     uint64_t outlen = inlen + inlen / 16 + 64 + 3;
     unsigned char *buf = new unsigned char[outlen];
     cout << MyCompress::Compress(data, inlen, buf, &outlen) << endl;
+
+    {
+        for (unsigned int i = 0; i < outlen;++i){
+            cout << (unsigned)buf[i]<<"," << flush;
+        }
+    }
 
     unsigned char out[2048] = {0};
     uint64_t newlen;
@@ -60,7 +66,7 @@ int test(int argc, char const *argv[]){
     // r = MySocket::InitLib();
     // // r = test_connect();
     // r = test_reconnect();
-    // r = test_comp();
+    r = test_comp();
     return r;
 }
 
