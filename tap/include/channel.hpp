@@ -43,7 +43,7 @@ class Channel
     void push(const T &item)
     {
         std::unique_lock<std::mutex> mlock(mutex_);
-        if(++max_size_>queue_.size()){
+        if(max_size_<=queue_.size()){
             return;
         }
         queue_.push(item);
@@ -55,7 +55,7 @@ class Channel
     void push(T &&item)
     {
         std::unique_lock<std::mutex> mlock(mutex_);
-        if (++max_size_ > queue_.size())
+        if (max_size_ <= queue_.size())
         {
             return;
         }

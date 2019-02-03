@@ -26,6 +26,7 @@
 #include "test.h"
 #include "config.h"
 #include "task.h"
+#include "mycompress.h"
 
 using namespace std;
 
@@ -40,6 +41,10 @@ static MyBufConn* g_mbc = nullptr;
  * @return: 返回小于0表示无效数据
  */
 int handle_data_recv_remote(const char* data,size_t len,BinArr& bs){
+    // uint64_t outlen = 20480;
+    // bs.resize(outlen);
+    // MyCompress::DeCompress((unsigned char *)data, len, &bs[0], &outlen);
+    // return outlen;
     bs = {data, data + len};
     return bs.size();
 }
@@ -54,12 +59,32 @@ int handle_data_recv_remote(const char* data,size_t len,BinArr& bs){
  */
 int handle_data_recv_tap(const char *data, size_t len, BinArr &bs)
 {
+    // uint64_t outlen = len + len / 16 + 64 + 3;
+    // bs.resize(outlen);
+    // MyCompress::Compress((unsigned char *)data, len, &bs[0], &outlen);
+    // // {
+    // //     cout << "send data:" << endl;
+    // //     for (unsigned int i = 0; i < bs.size()&&i<50;++i){
+    // //         printf("%02X ", bs[i]);
+    // //     }
+    // //     printf("\n");
+    // //     cout << "src mac" << endl;
+    // //     unsigned char out[20480] = {0};
+    // //     uint64_t newlen;
+    // //     cout << MyCompress::DeCompress(&bs[0], outlen, out, &newlen) << endl;
+    // //     for (int i = 6; i < 12; ++i)
+    // //     {
+    // //         cout << (unsigned)out[i] << " " << flush;
+    // //     }
+    // //     cout << endl;
+    // // }
+    // return outlen;
     bs = {data, data + len};
     return bs.size();
 }
 
 int th_listen(MyTap* tap){
-    static char buf[2048] = {0};
+    static char buf[20480] = {0};
     int r = 0;
     for (;;)
     {
@@ -93,9 +118,9 @@ int testwin(const MyMAC *mac, const MyIPNet* ipnet)
     int n = 0;
     // //TUN至少写入20字节,TAP至少写入14字节
     // n = tap.Write("12345678901234567890", 14);
-    char buf[2048 + 14] = {0};
+    char buf[20480 + 14] = {0};
 
-    while((n = tap.Read(buf, 2048))>=0){
+    while((n = tap.Read(buf, 20480))>=0){
         // static int c = 0;
         // cout << ++c << " tap read:"<< n << endl;
         if(n<=0){
@@ -138,9 +163,9 @@ int testunix(const MyMAC *mac, const MyIPNet *ipnet)
     int n = 0;
     // //TUN至少写入20字节,TAP至少写入14字节
     // n = tap.Write("12345678901234567890", 14);
-    unsigned char buf[2048 + 14] = {0};
+    unsigned char buf[20480 + 14] = {0};
 
-    while ((n = tap.Read((char *)buf, 2048)) >= 0)
+    while ((n = tap.Read((char *)buf, 20480)) >= 0)
     {
         // static int c = 0;
         // cout << ++c << " tap read:"<< n << endl;
@@ -169,6 +194,13 @@ int init(int argc, char const *argv[])
         return r;
     }
 
+    //发送心跳包线程
+    r = DetachHeartBeat(10);
+    if (r < 0)
+    {
+        return r;
+    }
+
     auto cfg = Config::GetInstance();
     const auto &sip = cfg->ServerIP;
     auto port = cfg->DataPort;
@@ -188,12 +220,6 @@ int init(int argc, char const *argv[])
             cout <<" failed,retry after 10 second..." << endl;
             this_thread::sleep_for(chrono::seconds(10));
         }
-    }
-
-    //发送心跳包线程
-    r = DetachHeartBeat(10);
-    if(r<0){
-        return r;
     }
 
     return r;

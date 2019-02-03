@@ -3,7 +3,7 @@
  * @Author: taowentao
  * @Date: 2019-01-06 11:43:48
  * @LastEditors: taowentao
- * @LastEditTime: 2019-02-03 12:13:54
+ * @LastEditTime: 2019-02-03 16:53:24
  */
 
 #include "test.h"
@@ -64,7 +64,7 @@ int test(int argc, char const *argv[]){
     r = r;
     argc = argc, argv = argv;
     // r = MySocket::InitLib();
-    // // r = test_connect();
+    // r = test_connect();
     // r = test_reconnect();
     // r = test_comp();
     return r;

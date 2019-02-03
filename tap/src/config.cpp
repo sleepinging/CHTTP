@@ -55,8 +55,8 @@ bool Config::handleline(const std::string &line){
     if (
         key[0] == '#' ||
         key[0] == '\'' ||
-        (key[0] == '/' && key[1] == '/')
-    )
+        key[0] == ';' ||
+        (key[0] == '/' && key[1] == '/'))
     {
         return true;
     }

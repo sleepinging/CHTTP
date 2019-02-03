@@ -150,13 +150,14 @@ int MyConn::ReConnect(int max)
     while (max-- != 0)
     {
         try{
+            cout << "reconnect " << ip_->ToString() << ":" << port_ << flush;
             *this = MySocket::Connect(ip_, port_, tp_);
-            cout << "reconnect success" << endl;
+            cout << " success" << endl;
             break;
         }
         catch (...)
         {
-            cout << "reconnect failed,retry..." << endl;
+            cout << " failed,retry..." << endl;
             this_thread::sleep_for(chrono::seconds(1));
         }
     }

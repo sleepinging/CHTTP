@@ -1,13 +1,21 @@
 #include "task.h"
 
+#include <string.h>
+
 #include <thread>
 #include <iostream>
 
 #include "mybufconn.h"
 #include "config.h"
 #include "myip.h"
+#include "mymac.h"
 
 using namespace std;
+
+//发送一次心跳,返回0成功
+int SendHeartBeat(){
+    return 0;
+}
 
 //心跳,返回0成功
 int DetachHeartBeat(int sec)
@@ -36,11 +44,14 @@ int DetachHeartBeat(int sec)
         }
     }
     //连接成功
-    static const unsigned char heart_packet[] = {1};
-    thread([=]() {
+    MyMAC mac(cfg->MAC);
+    thread([sec,mac]() {
+        //1 mac
+        static unsigned char heart_packet[7] = {1};
+        memcpy(heart_packet+1, mac.data, 6);
         for (;; this_thread::sleep_for(chrono::seconds(sec)))
         {
-            mbc->Write((const char*)heart_packet, 1);
+            mbc->Write((const char*)heart_packet, 7);
         }
     }).detach();
 
