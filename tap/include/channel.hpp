@@ -14,7 +14,7 @@ class Channel
   public:
     Channel(size_t size = 512)
     {
-        size_ = size;
+        max_size_ = size;
         //queue_
     }
     T pop()
@@ -43,8 +43,10 @@ class Channel
     void push(const T &item)
     {
         std::unique_lock<std::mutex> mlock(mutex_);
+        if(++max_size_>queue_.size()){
+            return;
+        }
         queue_.push(item);
-        //mlock.unlock();
         if(queue_.size()==1){
             cond_.notify_one();
         }
@@ -53,8 +55,11 @@ class Channel
     void push(T &&item)
     {
         std::unique_lock<std::mutex> mlock(mutex_);
+        if (++max_size_ > queue_.size())
+        {
+            return;
+        }
         queue_.push(std::move(item));
-        //mlock.unlock();
         if (queue_.size() == 1)
         {
             cond_.notify_one();
@@ -65,7 +70,7 @@ class Channel
     std::queue<T> queue_;
     std::mutex mutex_;
     std::condition_variable cond_;
-    size_t size_=0;
+    size_t max_size_=0;
 };
 
 #endif

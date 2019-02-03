@@ -25,6 +25,7 @@
 #include "myipnet.h"
 #include "test.h"
 #include "config.h"
+#include "task.h"
 
 using namespace std;
 
@@ -174,7 +175,7 @@ int init(int argc, char const *argv[])
 
     MyIP ip(sip);
     while(1){//直到连接成功
-        cout << "connect to server " << ip.ToString() << flush;
+        cout << "connect to " << ip.ToString() << ":" << port << flush;
         try
         {
             g_mbc = new MyBufConn(&ip, port, ConnType::TCP);
@@ -187,6 +188,12 @@ int init(int argc, char const *argv[])
             cout <<" failed,retry after 10 second..." << endl;
             this_thread::sleep_for(chrono::seconds(10));
         }
+    }
+
+    //发送心跳包线程
+    r = DetachHeartBeat(10);
+    if(r<0){
+        return r;
     }
 
     return r;

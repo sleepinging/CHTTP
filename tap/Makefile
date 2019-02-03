@@ -24,6 +24,7 @@ OBJS += $(OBJPATH)/config.o
 OBJS += $(OBJPATH)/tfile.o
 OBJS += $(OBJPATH)/test.o
 OBJS += $(OBJPATH)/mycompress.o
+OBJS += $(OBJPATH)/task.o
 
 GXX=g++
 
@@ -79,6 +80,8 @@ $(OBJPATH)/test.o:src/test.cpp include/test.h
 	$(GXX) -c $< $(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
 $(OBJPATH)/mycompress.o:src/mycompress.cpp include/mycompress.h
 	$(GXX) -c $< $(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@
+$(OBJPATH)/task.o:src/task.cpp include/task.h
+	$(GXX) -c $< $(CPP_INCLUDE_PATH) $(BUILD_FLAG) -o $@	
 	
 clean:
 	del $(OBJS) $(targetname)
