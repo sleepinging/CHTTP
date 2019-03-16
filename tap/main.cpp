@@ -194,12 +194,12 @@ int init(int argc, char const *argv[])
         return r;
     }
 
-    //发送心跳包线程
-    r = DetachHeartBeat(10);
-    if (r < 0)
-    {
-        return r;
-    }
+    // //发送心跳包线程
+    // r = DetachHeartBeat(10);
+    // if (r < 0)
+    // {
+    //     return r;
+    // }
 
     auto cfg = Config::GetInstance();
     const auto &sip = cfg->ServerIP;
@@ -210,7 +210,8 @@ int init(int argc, char const *argv[])
         cout << "connect to " << ip.ToString() << ":" << port << flush;
         try
         {
-            g_mbc = new MyBufConn(&ip, port, ConnType::TCP);
+            // g_mbc = new MyBufConn(&ip, port, ConnType::TCP);
+            g_mbc = new MyBufConn(&ip, port, ConnType::UDP);
             cout << " success" << endl;
             break;
         }
@@ -230,6 +231,22 @@ int cleanup(){
     delete g_mbc;
     g_mbc = nullptr;
     r = MySocket::CleanLib();
+    return r;
+}
+//登录
+int login(const MyMAC &mac,const MyIP &ip){
+    int r = 0;
+    auto cfg = Config::GetInstance();
+    MyIP sip(cfg->ServerIP);
+    auto port = cfg->CTLPort;
+    MySocket ms;
+    auto cn = ms.Connect(&sip, port, ConnType::UDP);
+    // auto cn = ms.Connect(&ip, 8876, ConnType::TCP,12346);
+    unsigned char buf[43] = {0x01};
+    memcpy(buf + 1, mac.data, 6);
+    memcpy(buf + 7, ip.data, 4);
+    memcpy(buf + 11, "01234567890123456789012345678901", 32);
+    r = cn.Write((const char *)buf, 43);
     return r;
 }
 
@@ -254,6 +271,13 @@ int main(int argc, char const *argv[])
 
     MyIPNet ipnet(cfg->IPNET);
     MyMAC mac(cfg->MAC);
+
+    r = login(mac, ipnet.GetIP());
+    if (r < 0)
+    {
+        cout << "login failed" << endl;
+        return r;
+    }
 
 #ifdef _WIN32
     testwin(&mac,&ipnet);

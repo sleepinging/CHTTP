@@ -44,7 +44,7 @@ MyConn MySocket::Connect(const MyIP *remoteip, int remoteport, ConnType type, in
     mc.localport_ = localport;
     mc.tp_ = type;
 
-    SOCKET_FD fd;
+    SOCKET_FD fd=0;
     switch(type){
     case ConnType::TCP:
         fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);

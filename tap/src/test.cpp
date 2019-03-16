@@ -3,7 +3,7 @@
  * @Author: taowentao
  * @Date: 2019-01-06 11:43:48
  * @LastEditors: taowentao
- * @LastEditTime: 2019-02-03 16:53:24
+ * @LastEditTime: 2019-03-16 12:58:50
  */
 
 #include "test.h"
@@ -53,6 +53,34 @@ int test_comp(){
     return 1;
 }
 
+int test_channel(){
+    Channel<BinArr> *channel_ = new Channel<BinArr>();
+    auto fp_read = [&]() {
+        int cc = 0;
+        while (1)
+        {
+            channel_->pop();
+            if (++cc % 100000 == 0)
+            {
+                cout << "pop  " << cc << " times" << endl;
+            }
+        }
+    };
+    thread(fp_read).detach();
+    BinArr bs(1500, 0xff);
+    int cc = 0;
+    while (1)
+    {
+        channel_->push(bs);
+        if (++cc % 100000 == 0)
+        {
+            cout << "push "<<cc<<" times" << endl;
+        }
+    }
+    delete channel_;
+    return -1;
+}
+
 /**
  * @description: 测试
  * @param {type} 
@@ -63,6 +91,7 @@ int test(int argc, char const *argv[]){
     //去除警告
     r = r;
     argc = argc, argv = argv;
+    // r=test_channel();
     // r = MySocket::InitLib();
     // r = test_connect();
     // r = test_reconnect();
