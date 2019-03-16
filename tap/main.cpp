@@ -106,6 +106,45 @@ int th_listen(MyTap* tap){
     return r;
 }
 
+//从TUN/TAP读取数据
+int read_tap(MyTap& tap){
+    int r = 0;
+
+    int n = 0;
+    // //TUN至少写入20字节,TAP至少写入14字节
+    // n = tap.Write("12345678901234567890", 14);
+    char buf[20480 + 14] = {0};
+
+    while ((n = tap.Read(buf, 20480)) >= 0)
+    {
+        // static int c = 0;
+        // cout << ++c << " tap read:"<< n << endl;
+        if (n < 14)
+        {
+            continue;
+        }
+
+        //不是本机MAC不发送
+        auto cfg = Config::GetInstance();
+        MyMAC mac(cfg->MAC);
+        if(memcmp(buf+6,mac.data,6)!=0){
+            continue;
+        }
+
+        BinArr bs;
+        //加密压缩等操作
+        if (handle_data_recv_tap(buf, n, bs) < 0)
+        {
+            continue;
+        }
+
+        //发送
+        g_mbc->Write((const char *)&bs[0], bs.size());
+    }
+
+    return r;
+}
+
 #ifdef _WIN32
 int testwin(const MyMAC *mac, const MyIPNet* ipnet)
 {
@@ -115,25 +154,7 @@ int testwin(const MyMAC *mac, const MyIPNet* ipnet)
     thread(th_listen,&tap).detach();
     // for(;;this_thread::sleep_for(chrono::seconds(1)));
 
-    int n = 0;
-    // //TUN至少写入20字节,TAP至少写入14字节
-    // n = tap.Write("12345678901234567890", 14);
-    char buf[20480 + 14] = {0};
-
-    while((n = tap.Read(buf, 20480))>=0){
-        // static int c = 0;
-        // cout << ++c << " tap read:"<< n << endl;
-        if(n<=0){
-            continue;
-        }
-
-        BinArr bs;
-        if(handle_data_recv_tap(buf, n, bs)<0){
-            continue;
-        }
-
-        g_mbc->Write((const char*)&bs[0], bs.size());
-    }
+    read_tap(tap);
 
     //tap.SetDisable();
 
@@ -160,18 +181,8 @@ int testunix(const MyMAC *mac, const MyIPNet *ipnet)
     // auto tap = MyTap::NewTUN(ipnet);
     thread(th_listen,&tap).detach();
 
-    int n = 0;
-    // //TUN至少写入20字节,TAP至少写入14字节
-    // n = tap.Write("12345678901234567890", 14);
-    unsigned char buf[20480 + 14] = {0};
+    read_tap(tap);
 
-    while ((n = tap.Read((char *)buf, 20480)) >= 0)
-    {
-        // static int c = 0;
-        // cout << ++c << " tap read:"<< n << endl;
-
-        g_mbc->Write((const char *)buf, n);
-    }
     return r;
 }
 #endif

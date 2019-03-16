@@ -80,8 +80,8 @@ int MyBufConn::Write(const char *buf, size_t len){
     if(len==0){
         return r;
     }
-    // auto bs = BinArr(buf, buf + len);
-    // channel_->push(std::move(bs));
-    r = conn_->Write(buf, len);
+    auto bs = BinArr(buf, buf + len);
+    channel_->push(std::move(bs));
+    // r = conn_->Write(buf, len);
     return r;
 }
