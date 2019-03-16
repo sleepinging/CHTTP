@@ -41,7 +41,7 @@ static MyBufConn* g_mbc = nullptr;
  * @return: 返回小于0表示无效数据
  */
 int handle_data_recv_remote(const char* data,size_t len,BinArr& bs){
-    // uint64_t outlen = 20480;
+    // uint64_t outlen = 65535;
     // bs.resize(outlen);
     // MyCompress::DeCompress((unsigned char *)data, len, &bs[0], &outlen);
     // return outlen;
@@ -69,7 +69,7 @@ int handle_data_recv_tap(const char *data, size_t len, BinArr &bs)
     // //     }
     // //     printf("\n");
     // //     cout << "src mac" << endl;
-    // //     unsigned char out[20480] = {0};
+    // //     unsigned char out[65535] = {0};
     // //     uint64_t newlen;
     // //     cout << MyCompress::DeCompress(&bs[0], outlen, out, &newlen) << endl;
     // //     for (int i = 6; i < 12; ++i)
@@ -84,11 +84,11 @@ int handle_data_recv_tap(const char *data, size_t len, BinArr &bs)
 }
 
 int th_listen(MyTap* tap){
-    static char buf[20480] = {0};
+    static char buf[65535] = {0};
     int r = 0;
     for (;;)
     {
-        r = g_mbc->Read(buf, 2047);
+        r = g_mbc->Read(buf, 65534);
         if(r<=0){
             continue;
         }
@@ -113,9 +113,9 @@ int read_tap(MyTap& tap){
     int n = 0;
     // //TUN至少写入20字节,TAP至少写入14字节
     // n = tap.Write("12345678901234567890", 14);
-    char buf[20480 + 14] = {0};
+    char buf[65535 + 14] = {0};
 
-    while ((n = tap.Read(buf, 20480)) >= 0)
+    while ((n = tap.Read(buf, 65535)) >= 0)
     {
         // static int c = 0;
         // cout << ++c << " tap read:"<< n << endl;
