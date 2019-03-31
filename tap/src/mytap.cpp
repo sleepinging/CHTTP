@@ -528,6 +528,8 @@ MyTap MyTap::NewTAP(const MyMAC *mac, const MyIP *ip, const MyMask *mask)
     }
 
 #endif
+    //修改MTU在1400以下,不然会在传输1024字节的时候卡死
+    tap.SetMTU(1400);
     return tap;
 }
 
