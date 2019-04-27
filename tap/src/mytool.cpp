@@ -13,9 +13,9 @@
 using namespace std;
 
 #ifdef _WIN32
-std::string GetTAPComponentId()
+std::string GetTAPComponentId(const std::string &RegPath)
 {
-    char szOwnerKeyPath[] = ADAPTER_KEY;
+    const char *szOwnerKeyPath = (RegPath==""? ADAPTER_KEY : RegPath.c_str());
     HKEY hOwnerKey = NULL; // {4d36e972-e325-11ce-bfc1-08002be10318}：类别：NSIS网卡驱动
     string szDevComponentId = "";
     if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, szOwnerKeyPath, 0, KEY_ALL_ACCESS, &hOwnerKey) == ERROR_SUCCESS)

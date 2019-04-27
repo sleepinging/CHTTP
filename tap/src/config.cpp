@@ -63,16 +63,6 @@ bool Config::handleline(const std::string &line){
 
     // cout << "key:" << key << ",value:" << value << endl;
 
-    // if (key == "deviceid")
-    // {
-    //     deviceId = std::move(value);
-    //     return true;
-    // }
-    // else if (key == "listenport")
-    // {
-    //     ListenPort = mytrans<string, int>(std::move(value));
-    //     return true;
-    // }
     if(key=="serverip"){
         ServerIP = std::move(value);
         return true;
@@ -99,6 +89,16 @@ bool Config::handleline(const std::string &line){
     if (key == "linuxtunpath")
     {
         LinuxTUNPath = std::move(value);
+        return true;
+    }
+    if (key == "adapter_key")
+    {
+        Adapter_Key = std::move(value);
+        return true;
+    }
+    if (key == "network_connections_key")
+    {
+        NetWork_Connections_Key = std::move(value);
         return true;
     }
 

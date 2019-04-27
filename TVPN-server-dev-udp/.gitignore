@@ -1,0 +1,5 @@
+
+*.exe
+tvpn-server
+src/github.com/*
+pkg/*

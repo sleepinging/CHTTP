@@ -59,6 +59,12 @@ class Config
     //显示调试消息等级
     int infolevel = 0;
 
+    //ADAPTER_KEY
+    std::string Adapter_Key;
+
+    //NETWORK_CONNECTIONS_KEY
+    std::string NetWork_Connections_Key;
+
   private:
     static Config *is_;
 

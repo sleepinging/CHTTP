@@ -18,7 +18,7 @@ std::string GetRegValue(const std::string& dir,const std::string name);
 int SetRegValueString(const std::string &dir, const std::string &name, const std::string &value);
 
 //获取TAP设备的ID
-std::string GetTAPComponentId();
+std::string GetTAPComponentId(const std::string &RegPath="");
 #else
 #endif
 

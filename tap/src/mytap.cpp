@@ -36,13 +36,14 @@ MyTap::MyTap(/* args */)
     mask_ = new MyMask();
 
 #ifdef _WIN32
-    id_ = GetTAPComponentId();
+    auto cfg = Config::GetInstance();
+    id_ = GetTAPComponentId(cfg->Adapter_Key);
     if(id_==""){
         cout << "get adapter id failed!" << endl;
         throw "get adapter id failed!";
     }
     dname_ = USERMODEDEVICEDIR + id_ + TAP_WIN_SUFFIX;
-    name_ = GetRegValue(NETWORK_CONNECTIONS_KEY + ("\\"+id_) + "\\Connection", "Name");
+    name_ = GetRegValue(cfg->NetWork_Connections_Key + ("\\"+id_) + "\\Connection", "Name");
     if (name_ == "")
     {
         cout << "get adapter name failed!" << endl;
