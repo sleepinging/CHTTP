@@ -253,11 +253,28 @@ int login(const MyMAC &mac,const MyIP &ip){
     MySocket ms;
     auto cn = ms.Connect(&sip, port, ConnType::UDP);
     // auto cn = ms.Connect(&ip, 8876, ConnType::TCP,12346);
-    unsigned char buf[43] = {0x01};
-    memcpy(buf + 1, mac.data, 6);
-    memcpy(buf + 7, ip.data, 4);
-    memcpy(buf + 11, "01234567890123456789012345678901", 32);
-    r = cn.Write((const char *)buf, 43);
+    int namelen = cfg->UserName.length();
+    int pwdlen = cfg->PassWord.length();
+    if(namelen>65535||pwdlen>65535){
+        cout << "username or password too long" << endl;
+        r = -1;
+        return r;
+    }
+    BinArr buf = {0x01};
+    //[0x01,mac:6,ip:4,namelen:2,name:namelen,pwdlen:2,pwd:pwdlen]
+    buf.insert(buf.end(),mac.data,mac.data+6);
+    buf.insert(buf.end(), ip.data, ip.data + 4);
+    buf.emplace_back(namelen >> 8);
+    buf.emplace_back(namelen & 0x00ff);
+    buf.insert(buf.end(),cfg->UserName.cbegin(),cfg->UserName.cend());
+    buf.emplace_back(pwdlen >> 8);
+    buf.emplace_back(pwdlen & 0x00ff);
+    buf.insert(buf.end(), cfg->PassWord.cbegin(), cfg->PassWord.cend());
+    r = cn.Write((const char *)&buf[0], buf.size());
+    cout << "login ..." << endl;
+    // BinArr recbuf(2048);
+    char recbuf[2048] = {0};
+    cn.Read(recbuf,2048);
     return r;
 }
 

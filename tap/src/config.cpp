@@ -101,6 +101,16 @@ bool Config::handleline(const std::string &line){
         NetWork_Connections_Key = std::move(value);
         return true;
     }
+    if (key == "username")
+    {
+        UserName = std::move(value);
+        return true;
+    }
+    if (key == "password")
+    {
+        PassWord = std::move(value);
+        return true;
+    }
 
     else if (key == "end")
     {
@@ -145,12 +155,34 @@ bool Config::check()
         cout << "ipnet can not empty" << endl;
         return false;
     }
+    if (UserName == "")
+    {
+        cout << "UserName can not empty" << endl;
+        return false;
+    }
+    if (PassWord == "")
+    {
+        cout << "PassWord can not empty" << endl;
+        return false;
+    }
+#ifdef _WIN32
+    if (Adapter_Key == "")
+    {
+        cout << "Adapter_Key can not empty" << endl;
+        return false;
+    }
+    if (NetWork_Connections_Key == "")
+    {
+        cout << "NetWork_Connections_Key can not empty" << endl;
+        return false;
+    }
+#else
     if (LinuxTUNPath == "")
     {
         cout << "LinuxTUNPath can not empty" << endl;
         return false;
     }
-
+#endif
     return true;
 }
 

@@ -40,7 +40,7 @@ LD_FLAGS_W=-lWs2_32
 LD_FLAGS_U=-lpthread
 LD_FLAGS=$(LD_FLAGS_W) -llzo2
 
-BUILD_FLAG=-Os -Wall -Wextra -std=c++11 #-static
+BUILD_FLAG=-g -Wall -Wextra -std=c++11 #-static
 
 #$@--目标文件，$^--所有的依赖文件，$<--第一个依赖文件。
 

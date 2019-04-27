@@ -50,6 +50,12 @@ class Config
     //IPNET
     std::string IPNET;
 
+    //Name
+    std::string UserName;
+
+    //Password
+    std::string PassWord;
+
     //linux tun设备位置
     std::string LinuxTUNPath = "/dev/net/tun";
 
