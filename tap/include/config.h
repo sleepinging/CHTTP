@@ -60,10 +60,10 @@ class Config
     int infolevel = 0;
 
     //ADAPTER_KEY
-    std::string Adapter_Key;
+    std::string Adapter_Key = "SYSTEM\\CurrentControlSet\\Control\\Class\\{4D36E972-E325-11CE-BFC1-08002BE10318}";
 
     //NETWORK_CONNECTIONS_KEY
-    std::string NetWork_Connections_Key;
+    std::string NetWork_Connections_Key = "SYSTEM\\CurrentControlSet\\Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}";
 
   private:
     static Config *is_;
