@@ -275,6 +275,26 @@ int login(const MyMAC &mac,const MyIP &ip){
     // BinArr recbuf(2048);
     char recbuf[2048] = {0};
     cn.Read(recbuf,2048);
+    auto code = recbuf[0];
+    if (code!= 0)
+    {
+        return -1;
+    }
+    auto msg = recbuf[1];
+    switch (msg)
+    {
+    case 1:
+        cout << "login success" << endl;
+        r = 0;
+        break;
+    case 2:
+        cout << "password or username wrong" << endl;
+        r = msg;
+        break;
+    default:
+        break;
+    }
+    
     return r;
 }
 
@@ -301,7 +321,7 @@ int main(int argc, char const *argv[])
     MyMAC mac(cfg->MAC);
 
     r = login(mac, ipnet.GetIP());
-    if (r < 0)
+    if (r !=0)
     {
         cout << "login failed" << endl;
         return r;
